@@ -1,8 +1,19 @@
+// app/(deluge)/columns.tsx
 'use client';
 
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Progress } from '@/components/ui/progress';
 import type { DelugeTorrent } from '@/types/torrent';
 import { ColumnDef } from '@tanstack/react-table';
+import { Circle, MoreHorizontal } from 'lucide-react';
 
 const formatBytes = (n: number) => {
   if (n < 1e6) return `${(n / 1024).toFixed(1)} KB`;
@@ -22,6 +33,32 @@ const formatETA = (secs: number) => {
 };
 
 export const columns: ColumnDef<DelugeTorrent>[] = [
+  {
+    id: 'state',
+    accessorKey: 'state', // assumes your DelugeTorrent has a `state: string` field
+    header: '', // no title, just the dot
+    enableSorting: false, // disable sorting on this column
+    cell: ({ getValue }) => {
+      const state = (getValue<string>() || '').toLowerCase();
+      const colorMap: Record<string, string> = {
+        downloading: 'text-green-500',
+        seeding: 'text-green-500',
+        paused: 'text-yellow-500',
+        queued: 'text-gray-400',
+        checking: 'text-gray-400',
+        error: 'text-red-500',
+      };
+      const colorClass = colorMap[state] ?? 'text-gray-400';
+      return (
+        <Circle
+          size={12}
+          className={colorClass}
+          fill={'currentColor'}
+          stroke={'none'}
+        />
+      );
+    },
+  },
   {
     accessorKey: 'name',
     header: 'Name',
@@ -70,5 +107,34 @@ export const columns: ColumnDef<DelugeTorrent>[] = [
     accessorKey: 'label',
     header: 'Label',
     cell: (info) => info.getValue<string>() ?? '—',
+  },
+  {
+    header: 'Actions',
+    id: 'actions',
+    cell: ({ row }) => {
+      const torrent = row.original;
+
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant='ghost' className='h-8 w-8 p-0'>
+              <span className='sr-only'>Open menu</span>
+              <MoreHorizontal />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align='end'>
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuItem
+              onClick={() => navigator.clipboard.writeText(torrent.id)}
+            >
+              Copy payment ID
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>View customer</DropdownMenuItem>
+            <DropdownMenuItem>View payment details</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    },
   },
 ];

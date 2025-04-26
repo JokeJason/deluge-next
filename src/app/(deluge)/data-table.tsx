@@ -20,13 +20,6 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-import {
-  ContextMenu,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuSeparator,
-  ContextMenuTrigger,
-} from '@/components/ui/context-menu';
 import { ArrowUpDown } from 'lucide-react';
 
 interface DataTableProps<T> {
@@ -40,8 +33,6 @@ interface DataTableProps<T> {
 export function DataTable<T extends object>({
   columns,
   data,
-  onEdit,
-  onDelete,
 }: DataTableProps<T>) {
   // 1) Set up state for sorting
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -96,49 +87,23 @@ export function DataTable<T extends object>({
         </TableHeader>
 
         <TableBody>
-          {table.getRowModel().rows.length === 0 && (
+          {table.getRowModel().rows.length ? (
+            table.getRowModel().rows.map((row) => (
+              <TableRow key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))
+          ) : (
             <TableRow>
               <TableCell colSpan={columns.length} className='h-24 text-center'>
                 No data.
               </TableCell>
             </TableRow>
           )}
-
-          {table.getRowModel().rows.map((row) => {
-            const original = row.original;
-            return (
-              <ContextMenu key={row.id}>
-                {/* Use asChild so that the TableRow is the right-click trigger */}
-                <ContextMenuTrigger asChild>
-                  <TableRow>
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                </ContextMenuTrigger>
-
-                <ContextMenuContent>
-                  <ContextMenuItem onSelect={() => onEdit?.(original)}>
-                    Edit
-                  </ContextMenuItem>
-                  <ContextMenuItem onSelect={() => onDelete?.(original)}>
-                    Delete
-                  </ContextMenuItem>
-                  <ContextMenuSeparator />
-                  <ContextMenuItem
-                    onSelect={() => console.log('Another action for', original)}
-                  >
-                    More…
-                  </ContextMenuItem>
-                </ContextMenuContent>
-              </ContextMenu>
-            );
-          })}
         </TableBody>
       </Table>
     </div>

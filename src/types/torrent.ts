@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 export const torrentSchema = z.object({
   id: z.string(),
+  state: z.string(),
   name: z.string(),
   totalSelected: z.number(),
   progress: z.number(),
