@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@ctrl/deluge": "^7.1.0",
+    "@radix-ui/react-context-menu": "^2.2.12",
     "@radix-ui/react-progress": "^1.1.4",
     "@radix-ui/react-select": "^2.2.2",
     "@radix-ui/react-slot": "^1.2.0",
