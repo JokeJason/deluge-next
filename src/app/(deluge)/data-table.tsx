@@ -3,10 +3,13 @@
 
 import {
   ColumnDef,
+  SortingState,
   flexRender,
   getCoreRowModel,
+  getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
+import * as React from 'react';
 
 import {
   Table,
@@ -16,6 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { ArrowUpDown } from 'lucide-react';
 
 interface DataTableProps<T> {
   columns: ColumnDef<T>[];
@@ -23,31 +27,58 @@ interface DataTableProps<T> {
 }
 
 export function DataTable<T>({ columns, data }: DataTableProps<T>) {
+  // 1) sorting state
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+
+  // 2) configure the table instance
   const table = useReactTable({
     data,
     columns,
+    state: { sorting },
+    onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(), // ← enable sorting
   });
 
   return (
     <div className='rounded-md border'>
       <Table>
         <TableHeader>
-          {table.getHeaderGroups().map((group) => (
-            <TableRow key={group.id}>
-              {group.headers.map((header) => (
-                <TableHead key={header.id}>
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
+          {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map((header) => {
+                const canSort = header.column.getCanSort();
+                const sorted = header.column.getIsSorted(); // 'asc' | 'desc' | false
+
+                return (
+                  <TableHead
+                    key={header.id}
+                    className={canSort ? 'cursor-pointer select-none' : ''}
+                    // 3) toggle sort on click
+                    onClick={() => canSort && header.column.toggleSorting()}
+                  >
+                    <div className='flex items-center space-x-1'>
+                      {flexRender(
                         header.column.columnDef.header,
                         header.getContext(),
                       )}
-                </TableHead>
-              ))}
+                      {canSort && (
+                        <ArrowUpDown
+                          className={`
+                            h-4 w-4 transition-opacity
+                            ${sorted ? 'opacity-100' : 'opacity-40'}
+                            ${sorted === 'desc' ? 'rotate-180' : ''}
+                          `}
+                        />
+                      )}
+                    </div>
+                  </TableHead>
+                );
+              })}
             </TableRow>
           ))}
         </TableHeader>
+
         <TableBody>
           {table.getRowModel().rows.length ? (
             table.getRowModel().rows.map((row) => (
@@ -62,7 +93,7 @@ export function DataTable<T>({ columns, data }: DataTableProps<T>) {
           ) : (
             <TableRow>
               <TableCell colSpan={columns.length} className='h-24 text-center'>
-                No torrents found.
+                No data.
               </TableCell>
             </TableRow>
           )}
