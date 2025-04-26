@@ -4,6 +4,9 @@ import { NextResponse } from 'next/server';
 const deluge = new Deluge({
   baseUrl: process.env.DELUGE_URL,
   password: process.env.DELUGE_PASSWORD,
+  timeout: process.env.DELUGE_TIMEOUT
+    ? Number(process.env.DELUGE_TIMEOUT)
+    : undefined,
 });
 
 export async function GET(request: Request) {
