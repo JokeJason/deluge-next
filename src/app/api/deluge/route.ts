@@ -9,14 +9,15 @@ const deluge = new Deluge({
     : undefined,
 });
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
     // Ensure authenticated session and fetch all torrent data
     const data = await deluge.getAllData();
     return NextResponse.json({ success: true, data });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
     return NextResponse.json(
-      { success: false, error: error.message },
+      { success: false, error: message },
       { status: 500 },
     );
   }
@@ -28,9 +29,10 @@ export async function POST(request: Request) {
     // Supports magnet links or uploaded .torrent content
     const result = await deluge.normalizedAddTorrent(torrent, options);
     return NextResponse.json({ success: true, result });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
     return NextResponse.json(
-      { success: false, error: error.message },
+      { success: false, error: message },
       { status: 500 },
     );
   }

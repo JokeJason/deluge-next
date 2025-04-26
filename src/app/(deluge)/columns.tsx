@@ -63,7 +63,7 @@ export const columns: ColumnDef<DelugeTorrent>[] = [
   },
   {
     accessorKey: 'raw.tracker_host',
-    header: 'Owner',
+    header: 'Tracker',
     cell: (info) => info.getValue<string>() ?? '—',
   },
   {
