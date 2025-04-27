@@ -11,6 +11,11 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Progress } from '@/components/ui/progress';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { NormalizedTorrent, TorrentState } from '@ctrl/shared-torrent';
 import { ColumnDef } from '@tanstack/react-table';
 import { Circle, MoreHorizontal } from 'lucide-react';
@@ -36,7 +41,7 @@ export const columns: ColumnDef<NormalizedTorrent>[] = [
   {
     id: 'state',
     accessorKey: 'state', // assumes your DelugeTorrent has a `state: string` field
-    header: 'Status', // no title, just the dot
+    header: '', // no title, just the dot
     enableSorting: true, // disable sorting on this column
     cell: ({ getValue }) => {
       const state = getValue<TorrentState>();
@@ -52,12 +57,19 @@ export const columns: ColumnDef<NormalizedTorrent>[] = [
       };
       const colorClass = colorMap[state] ?? 'text-gray-400';
       return (
-        <Circle
-          size={12}
-          className={colorClass}
-          fill={'currentColor'}
-          stroke={'none'}
-        />
+        <Tooltip>
+          <TooltipTrigger>
+            <Circle
+              size={12}
+              className={colorClass}
+              fill={'currentColor'}
+              stroke={'none'}
+            />
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>{state.toString()}</p>
+          </TooltipContent>
+        </Tooltip>
       );
     },
   },
