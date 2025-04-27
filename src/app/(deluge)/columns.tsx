@@ -3,6 +3,13 @@
 
 import { Button } from '@/components/ui/button';
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -19,6 +26,7 @@ import {
 import { NormalizedTorrent, TorrentState } from '@ctrl/shared-torrent';
 import { ColumnDef } from '@tanstack/react-table';
 import { Circle, MoreHorizontal } from 'lucide-react';
+import { useState } from 'react';
 
 const formatBytes = (n: number) => {
   if (n < 1e6) return `${(n / 1024).toFixed(1)} KB`;
@@ -122,34 +130,78 @@ export const columns: ColumnDef<NormalizedTorrent>[] = [
     id: 'actions',
     cell: ({ row }) => {
       const torrent = row.original;
+      const [isLabelDialogOpen, setLabelDialogOpen] = useState(false);
+      const [isRemoveDialogOpen, setRemoveDialogOpen] = useState(false);
 
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant='ghost' className='h-8 w-8 p-0'>
-              <span className='sr-only'>Open menu</span>
-              <MoreHorizontal />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align='end'>
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(torrent.id)}
-            >
-              Pause
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(torrent.id)}
-            >
-              Resume
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Label</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant='ghost' className='h-8 w-8 p-0'>
+                <span className='sr-only'>Open menu</span>
+                <MoreHorizontal />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align='end'>
+              <DropdownMenuLabel className={'font-bold'}>
+                Actions
+              </DropdownMenuLabel>
+              <DropdownMenuItem
+                onClick={() => navigator.clipboard.writeText(torrent.id)}
+              >
+                Pause
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => navigator.clipboard.writeText(torrent.id)}
+              >
+                Resume
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>View customer</DropdownMenuItem>
+              <DropdownMenuItem>View payment details</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => setRemoveDialogOpen(true)}>
+                Remove Torrent
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => {
+                  setLabelDialogOpen(true);
+                }}
+              >
+                Label
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <Dialog
+            open={isRemoveDialogOpen}
+            onOpenChange={() => setRemoveDialogOpen(false)}
+          >
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Remove Torrent</DialogTitle>
+                <DialogDescription>
+                  Change label use following selector
+                </DialogDescription>
+              </DialogHeader>
+            </DialogContent>
+          </Dialog>
+
+          <Dialog
+            open={isLabelDialogOpen}
+            onOpenChange={() => setLabelDialogOpen(false)}
+          >
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Change Label</DialogTitle>
+                <DialogDescription>
+                  Change label use following selector
+                </DialogDescription>
+              </DialogHeader>
+            </DialogContent>
+          </Dialog>
+        </>
       );
     },
   },
