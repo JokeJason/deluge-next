@@ -5,7 +5,7 @@ export const delugeApi = axios.create({
   timeout: 10_000,
 });
 
-// Optional: request/response interceptors for error handling, auth, logging, etc.
+// Optional: request/response interceptors for error handling, login, logging, etc.
 delugeApi.interceptors.response.use(
   (response) => response,
   (error) => {
