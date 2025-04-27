@@ -223,6 +223,7 @@ export const columns: ColumnDef<NormalizedTorrent>[] = [
           <LabelDialog
             isLabelDialogOpen={isLabelDialogOpen}
             setLabelDialogOpen={setLabelDialogOpen}
+            torrent={torrent}
           />
         </>
       );
