@@ -1,5 +1,5 @@
-import QueryProvider from '@/app/components/QueryProvider';
 import { TooltipProvider } from '@/components/ui/tooltip';
+import QueryProvider from '@/providers/QueryProvider';
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import React from 'react';

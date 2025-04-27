@@ -3,47 +3,15 @@
 
 import { columns } from '@/app/(deluge)/columns';
 import { DataTable } from '@/app/(deluge)/data-table';
-import {
-  AllClientData,
-  NormalizedTorrent,
-  TorrentState,
-} from '@ctrl/shared-torrent';
-import { useQueries, useQuery } from '@tanstack/react-query';
+import { useAllData } from '@/hooks/queries/useAllData';
+import { useTorrents } from '@/hooks/queries/useTorrents';
+import { NormalizedTorrent, TorrentState } from '@ctrl/shared-torrent';
 import { useEffect, useState } from 'react';
-
-async function fetchAllData() {
-  const origin = process.env.NEXT_PUBLIC_BASE_URL;
-  const res = await fetch(`${origin}/api/deluge`);
-  const json = await res.json();
-  if (!json.success) {
-    throw new Error(json.error || 'Failed to load torrents');
-  }
-  return json.data as AllClientData;
-}
-
-async function fetchTorrent(id: string) {
-  const origin = process.env.NEXT_PUBLIC_BASE_URL;
-  const res = await fetch(`${origin}/api/deluge/torrent?torrentId=${id}`);
-  const json = await res.json();
-  if (!json.success) {
-    throw new Error(json.error || 'Failed to load torrent');
-  }
-  return json.data as NormalizedTorrent;
-}
 
 export default function DelugePage() {
   const [activeIds, setActiveIds] = useState<string[]>([]);
 
-  const {
-    data: allData,
-    isLoading,
-    isError,
-    error,
-  } = useQuery({
-    queryKey: ['torrents'],
-    queryFn: fetchAllData,
-    refetchInterval: 1000 * 30, // 30 seconds
-  });
+  const { data: allData, isLoading, isError, error } = useAllData();
 
   useEffect(() => {
     if (!allData) return;
@@ -56,13 +24,7 @@ export default function DelugePage() {
     setActiveIds(activeIds);
   }, [allData]);
 
-  const activeQueries = useQueries({
-    queries: activeIds.map((id) => ({
-      queryKey: ['torrent', id],
-      queryFn: () => fetchTorrent(id),
-      refetchInterval: 1000 * 10, // 30 seconds
-    })),
-  });
+  const activeQueries = useTorrents(activeIds);
 
   // extract successful poll results
   const updates = activeQueries
