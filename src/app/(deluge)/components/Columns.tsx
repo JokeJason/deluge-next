@@ -1,4 +1,4 @@
-// app/(deluge)/columns.tsx
+// app/(deluge)/Columns.tsx
 'use client';
 
 import { LabelDialog } from '@/app/(deluge)/components/LabelDialog';

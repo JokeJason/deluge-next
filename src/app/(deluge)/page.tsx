@@ -1,8 +1,8 @@
 // app/(deluge)/page.tsx
 'use client';
 
-import { columns } from '@/app/(deluge)/columns';
-import { DataTable } from '@/app/(deluge)/data-table';
+import { columns } from '@/app/(deluge)/components/Columns';
+import { DelugeTable } from '@/app/(deluge)/components/DelugeTable';
 import { useAllData } from '@/hooks/queries/useAllData';
 import { useTorrents } from '@/hooks/queries/useTorrents';
 import { NormalizedTorrent, TorrentState } from '@ctrl/shared-torrent';
@@ -55,7 +55,7 @@ export default function DelugePage() {
         </p>
       )}
       {allData && (
-        <DataTable<NormalizedTorrent> columns={columns} data={merged} />
+        <DelugeTable columns={columns} data={merged} labels={allData.labels} />
       )}
     </div>
   );

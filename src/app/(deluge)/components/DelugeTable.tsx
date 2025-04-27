@@ -1,11 +1,13 @@
-// app/(deluge)/components/data-table.tsx
+// app/(deluge)/components/DelugeTable.tsx
 'use client';
 
 import {
   ColumnDef,
+  ColumnFiltersState,
   SortingState,
   flexRender,
   getCoreRowModel,
+  getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
@@ -13,6 +15,14 @@ import {
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import {
   Table,
   TableBody,
@@ -22,20 +32,25 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
+import { Label, NormalizedTorrent, TorrentState } from '@ctrl/shared-torrent';
 import { ArrowUpDown } from 'lucide-react';
 
-interface DataTableProps<T> {
-  columns: ColumnDef<T>[];
-  data: T[];
+interface DelugeTableProps {
+  columns: ColumnDef<NormalizedTorrent>[];
+  data: NormalizedTorrent[];
+  labels: Label[];
 }
 
-export function DataTable<T extends object>({
-  columns,
-  data,
-}: DataTableProps<T>) {
+const stateOptions: TorrentState[] = Object.values(TorrentState);
+
+export function DelugeTable({ columns, data, labels }: DelugeTableProps) {
+  const labelOptions = labels.map((label) => label.name);
+
   // 1) Set up state for sorting
   const [sorting, setSorting] = useState<SortingState>([]);
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 20 });
+
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
   // 2) configure the table instance
   const table = useReactTable({
@@ -46,11 +61,76 @@ export function DataTable<T extends object>({
     getSortedRowModel: getSortedRowModel(), // ← enable sorting
     getPaginationRowModel: getPaginationRowModel(),
     onPaginationChange: setPagination,
-    state: { sorting, pagination },
+    getFilteredRowModel: getFilteredRowModel(),
+    state: {
+      sorting,
+      pagination,
+    },
   });
 
   return (
     <div>
+      {/* ——— Filter Bar ——— */}
+      <div className='flex flex-wrap gap-4 py-4'>
+        {/*/!* Name search *!/*/}
+        <Input
+          placeholder='Search by name...'
+          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+          onChange={(e) =>
+            table.getColumn('name')?.setFilterValue(e.currentTarget.value)
+          }
+          className='max-w-sm'
+        />
+
+        {/* State dropdown */}
+        <Select
+          value={
+            (table.getColumn('state')?.getFilterValue() as string) ?? 'all'
+          }
+          onValueChange={(val) =>
+            table
+              .getColumn('state')
+              ?.setFilterValue(val === 'all' ? undefined : val)
+          }
+        >
+          <SelectTrigger className='w-40'>
+            <SelectValue placeholder='Filter by state' />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={'all'}>All States</SelectItem>
+            {stateOptions.map((opt) => (
+              <SelectItem key={opt} value={opt}>
+                {opt}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        {/* Label dropdown */}
+        <Select
+          value={
+            (table.getColumn('label')?.getFilterValue() as string) ?? 'all'
+          }
+          onValueChange={(val) =>
+            table
+              .getColumn('label')
+              ?.setFilterValue(val === 'all' ? undefined : val)
+          }
+        >
+          <SelectTrigger className='w-40'>
+            <SelectValue placeholder='Filter by label' />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value='all'>All Labels</SelectItem>
+            {labelOptions.map((opt) => (
+              <SelectItem key={opt} value={opt}>
+                {opt}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
       <div className='rounded-md border'>
         <Table>
           <TableHeader>
