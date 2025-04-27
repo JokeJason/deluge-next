@@ -26,7 +26,7 @@ export async function updateLabel(
   torrentId: string,
   label: string,
 ): Promise<NormalizedTorrent> {
-  const { data } = await delugeApi.post('/torrent/label', {
+  const { data } = await delugeApi.put('/torrent/label', {
     torrentId,
     label,
   });

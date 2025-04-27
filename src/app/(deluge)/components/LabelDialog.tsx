@@ -23,6 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useUpdateTorrentLabel } from '@/hooks/mutations/useUpdateTorrentLabel';
 import { useLabels } from '@/hooks/queries/useLabels';
 import { NormalizedTorrent } from '@ctrl/shared-torrent';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -45,13 +46,14 @@ export function LabelDialog({
   torrent,
 }: LabelDialogProps) {
   const { data: labels } = useLabels();
+  const mutation = useUpdateTorrentLabel();
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log('onSubmit', data, torrent);
+    mutation.mutate({ torrentId: torrent.id, label: data.label });
   }
 
   return (
