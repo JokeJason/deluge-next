@@ -3,7 +3,6 @@
 
 import {
   ColumnDef,
-  ColumnFiltersState,
   SortingState,
   flexRender,
   getCoreRowModel,
@@ -45,12 +44,11 @@ const stateOptions: TorrentState[] = Object.values(TorrentState);
 
 export function DelugeTable({ columns, data, labels }: DelugeTableProps) {
   const labelOptions = labels.map((label) => label.name);
+  const pathOptions = Array.from(new Set(data.map((t) => t.savePath)));
 
   // 1) Set up state for sorting
   const [sorting, setSorting] = useState<SortingState>([]);
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 20 });
-
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
   // 2) configure the table instance
   const table = useReactTable({
@@ -81,7 +79,6 @@ export function DelugeTable({ columns, data, labels }: DelugeTableProps) {
           }
           className='max-w-sm'
         />
-
         {/* State dropdown */}
         <Select
           value={
@@ -105,7 +102,6 @@ export function DelugeTable({ columns, data, labels }: DelugeTableProps) {
             ))}
           </SelectContent>
         </Select>
-
         {/* Label dropdown */}
         <Select
           value={
@@ -129,6 +125,28 @@ export function DelugeTable({ columns, data, labels }: DelugeTableProps) {
             ))}
           </SelectContent>
         </Select>
+        <Select
+          value={
+            (table.getColumn('savePath')?.getFilterValue() as string) ?? 'all'
+          }
+          onValueChange={(val) =>
+            table
+              .getColumn('savePath')
+              ?.setFilterValue(val === 'all' ? undefined : val)
+          }
+        >
+          <SelectTrigger className='w-48'>
+            <SelectValue placeholder='Filter by path' />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value='all'>All Paths</SelectItem>
+            {pathOptions.map((path) => (
+              <SelectItem key={path} value={path}>
+                {path}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>{' '}
       </div>
 
       <div className='rounded-md border'>

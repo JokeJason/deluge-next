@@ -1,4 +1,5 @@
 import { delugeApi } from '@/lib/delugeApi';
+import { DefaultResponse } from '@ctrl/deluge';
 import { AllClientData, NormalizedTorrent } from '@ctrl/shared-torrent';
 
 export async function fetchAllData(): Promise<AllClientData> {
@@ -32,4 +33,22 @@ export async function updateLabel(
   });
   if (!data.success) throw new Error(data.error);
   return data.data as NormalizedTorrent;
+}
+
+export async function removeTorrent(torrentId: string): Promise<Boolean> {
+  const { data } = await delugeApi.delete('/torrent', {
+    params: { torrentId },
+  });
+  if (!data.success) throw new Error(data.error);
+  return data.data as Boolean;
+}
+
+export async function verifyTorrent(
+  torrentId: string,
+): Promise<DefaultResponse> {
+  const { data } = await delugeApi.post('/torrent/verify', {
+    torrentId,
+  });
+  if (!data.success) throw new Error(data.error);
+  return data.data as DefaultResponse;
 }

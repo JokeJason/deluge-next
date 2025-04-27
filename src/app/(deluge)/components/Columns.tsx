@@ -2,15 +2,8 @@
 'use client';
 
 import { LabelDialog } from '@/app/(deluge)/components/LabelDialog';
+import { RemoveDialog } from '@/app/(deluge)/components/RemoveDialog';
 import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,16 +12,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { useVerifyTorrent } from '@/hooks/mutations/useVerifyTorrent';
 import { NormalizedTorrent, TorrentState } from '@ctrl/shared-torrent';
-import { useQueryClient } from '@tanstack/react-query';
 import { ColumnDef } from '@tanstack/react-table';
 import { Circle, MoreHorizontal } from 'lucide-react';
 import { useState } from 'react';
@@ -137,8 +128,7 @@ export const columns: ColumnDef<NormalizedTorrent>[] = [
       const torrent = row.original;
       const [isLabelDialogOpen, setLabelDialogOpen] = useState(false);
       const [isRemoveDialogOpen, setRemoveDialogOpen] = useState(false);
-
-      const queryClient = useQueryClient();
+      const verifyTorrent = useVerifyTorrent();
 
       return (
         <>
@@ -172,6 +162,12 @@ export const columns: ColumnDef<NormalizedTorrent>[] = [
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
+                onClick={() => verifyTorrent.mutate({ torrentId: torrent.id })}
+              >
+                Force Recheck
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
                 onClick={() => {
                   setLabelDialogOpen(true);
                 }}
@@ -181,44 +177,11 @@ export const columns: ColumnDef<NormalizedTorrent>[] = [
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <Dialog
-            open={isRemoveDialogOpen}
-            onOpenChange={() => setRemoveDialogOpen(false)}
-          >
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Remove Torrent</DialogTitle>
-                <DialogDescription>
-                  Delete torrent and all related data
-                </DialogDescription>
-              </DialogHeader>
-              <div className='grid gap-4 py-4'>
-                <div className='grid grid-cols-4 items-center gap-4'>
-                  <Label htmlFor='name' className='text-right'>
-                    Name
-                  </Label>
-                  <Input
-                    id='name'
-                    value='Pedro Duarte'
-                    className='col-span-3'
-                  />
-                </div>
-                <div className='grid grid-cols-4 items-center gap-4'>
-                  <Label htmlFor='username' className='text-right'>
-                    Username
-                  </Label>
-                  <Input
-                    id='username'
-                    value='@peduarte'
-                    className='col-span-3'
-                  />
-                </div>
-              </div>
-              <DialogFooter>
-                <Button type='submit'>Save changes</Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+          <RemoveDialog
+            isLabelDialogOpen={isRemoveDialogOpen}
+            setLabelDialogOpen={setRemoveDialogOpen}
+            torrent={torrent}
+          />
 
           <LabelDialog
             isLabelDialogOpen={isLabelDialogOpen}
@@ -228,5 +191,12 @@ export const columns: ColumnDef<NormalizedTorrent>[] = [
         </>
       );
     },
+  },
+  {
+    accessorKey: 'savePath',
+    header: 'Download Path',
+    cell: (info) => info.getValue<string>(),
+    filterFn: (row, columnId, filterValue) =>
+      row.getValue<string>(columnId) === filterValue,
   },
 ];
