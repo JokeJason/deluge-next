@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Progress } from '@/components/ui/progress';
-import type { DelugeTorrent } from '@/types/torrent';
+import { NormalizedTorrent, TorrentState } from '@ctrl/shared-torrent';
 import { ColumnDef } from '@tanstack/react-table';
 import { Circle, MoreHorizontal } from 'lucide-react';
 
@@ -32,21 +32,23 @@ const formatETA = (secs: number) => {
   return [h && `${h}h`, m && `${m}m`, `${s}s`].filter(Boolean).join(' ');
 };
 
-export const columns: ColumnDef<DelugeTorrent>[] = [
+export const columns: ColumnDef<NormalizedTorrent>[] = [
   {
     id: 'state',
     accessorKey: 'state', // assumes your DelugeTorrent has a `state: string` field
-    header: '', // no title, just the dot
+    header: 'Status', // no title, just the dot
     enableSorting: false, // disable sorting on this column
     cell: ({ getValue }) => {
-      const state = (getValue<string>() || '').toLowerCase();
+      const state = getValue<TorrentState>();
       const colorMap: Record<string, string> = {
         downloading: 'text-green-500',
-        seeding: 'text-green-500',
-        paused: 'text-yellow-500',
-        queued: 'text-gray-400',
+        seeding: 'text-blue-500',
+        paused: 'text-gray-500',
+        queued: 'text-yellow-400',
         checking: 'text-gray-400',
+        warning: 'text-orange-500',
         error: 'text-red-500',
+        unknown: 'text-black-400',
       };
       const colorClass = colorMap[state] ?? 'text-gray-400';
       return (
@@ -97,11 +99,6 @@ export const columns: ColumnDef<DelugeTorrent>[] = [
     accessorKey: 'eta',
     header: 'ETA',
     cell: (info) => formatETA(info.getValue<number>()),
-  },
-  {
-    accessorKey: 'raw.tracker_host',
-    header: 'Tracker',
-    cell: (info) => info.getValue<string>() ?? '—',
   },
   {
     accessorKey: 'label',

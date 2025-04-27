@@ -25,9 +25,6 @@ import { ArrowUpDown } from 'lucide-react';
 interface DataTableProps<T> {
   columns: ColumnDef<T>[];
   data: T[];
-  /** optional callbacks */
-  onEdit?: (row: T) => void;
-  onDelete?: (row: T) => void;
 }
 
 export function DataTable<T extends object>({
