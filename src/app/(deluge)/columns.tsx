@@ -6,6 +6,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
@@ -17,6 +18,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import {
   Tooltip,
@@ -24,6 +27,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { NormalizedTorrent, TorrentState } from '@ctrl/shared-torrent';
+import { useQueryClient } from '@tanstack/react-query';
 import { ColumnDef } from '@tanstack/react-table';
 import { Circle, MoreHorizontal } from 'lucide-react';
 import { useState } from 'react';
@@ -133,6 +137,8 @@ export const columns: ColumnDef<NormalizedTorrent>[] = [
       const [isLabelDialogOpen, setLabelDialogOpen] = useState(false);
       const [isRemoveDialogOpen, setRemoveDialogOpen] = useState(false);
 
+      const queryClient = useQueryClient();
+
       return (
         <>
           <DropdownMenu>
@@ -182,9 +188,34 @@ export const columns: ColumnDef<NormalizedTorrent>[] = [
               <DialogHeader>
                 <DialogTitle>Remove Torrent</DialogTitle>
                 <DialogDescription>
-                  Change label use following selector
+                  Delete torrent and all related data
                 </DialogDescription>
               </DialogHeader>
+              <div className='grid gap-4 py-4'>
+                <div className='grid grid-cols-4 items-center gap-4'>
+                  <Label htmlFor='name' className='text-right'>
+                    Name
+                  </Label>
+                  <Input
+                    id='name'
+                    value='Pedro Duarte'
+                    className='col-span-3'
+                  />
+                </div>
+                <div className='grid grid-cols-4 items-center gap-4'>
+                  <Label htmlFor='username' className='text-right'>
+                    Username
+                  </Label>
+                  <Input
+                    id='username'
+                    value='@peduarte'
+                    className='col-span-3'
+                  />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button type='submit'>Save changes</Button>
+              </DialogFooter>
             </DialogContent>
           </Dialog>
 
@@ -199,6 +230,31 @@ export const columns: ColumnDef<NormalizedTorrent>[] = [
                   Change label use following selector
                 </DialogDescription>
               </DialogHeader>
+              <div className='grid gap-4 py-4'>
+                <div className='grid grid-cols-4 items-center gap-4'>
+                  <Label htmlFor='name' className='text-right'>
+                    Name
+                  </Label>
+                  <Input
+                    id='name'
+                    value='Pedro Duarte'
+                    className='col-span-3'
+                  />
+                </div>
+                <div className='grid grid-cols-4 items-center gap-4'>
+                  <Label htmlFor='username' className='text-right'>
+                    Username
+                  </Label>
+                  <Input
+                    id='username'
+                    value='@peduarte'
+                    className='col-span-3'
+                  />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button type='submit'>Save changes</Button>
+              </DialogFooter>
             </DialogContent>
           </Dialog>
         </>
