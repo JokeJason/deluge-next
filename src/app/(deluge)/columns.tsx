@@ -136,11 +136,18 @@ export const columns: ColumnDef<NormalizedTorrent>[] = [
             <DropdownMenuItem
               onClick={() => navigator.clipboard.writeText(torrent.id)}
             >
-              Copy payment ID
+              Pause
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => navigator.clipboard.writeText(torrent.id)}
+            >
+              Resume
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>View customer</DropdownMenuItem>
             <DropdownMenuItem>View payment details</DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>Label</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );

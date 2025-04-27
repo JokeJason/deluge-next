@@ -49,9 +49,7 @@ export default function DelugePage() {
     if (!allData) return;
 
     const active = allData.torrents.filter(
-      (torrent) =>
-        torrent.state === TorrentState.downloading ||
-        torrent.state === TorrentState.seeding,
+      (torrent) => torrent.state === TorrentState.downloading,
     );
 
     const activeIds = active.map((torrent) => torrent.id);
