@@ -9,8 +9,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { useLabels } from '@/hooks/queries/useLabels';
 
 export interface LabelDialogProps {
@@ -37,12 +42,20 @@ export function LabelDialog({
           </DialogDescription>
         </DialogHeader>
         <div className='grid gap-4 py-4'>
-          <div className='grid grid-cols-4 items-center gap-4'>
-            <Label htmlFor='name' className='text-right'>
-              Name
-            </Label>
-            <
-          </div>
+          {labels && (
+            <Select>
+              <SelectTrigger className={'w-full'}>
+                <SelectValue placeholder={'Label'}></SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                {labels?.map((label) => (
+                  <SelectItem key={label} value={label}>
+                    {label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
         </div>
         <DialogFooter>
           <Button type='submit'>Save changes</Button>
