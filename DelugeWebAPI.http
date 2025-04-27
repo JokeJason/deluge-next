@@ -1,0 +1,23 @@
+### Get All Deluge Data
+GET http://localhost:3000/api/deluge
+###
+
+### Get all hosts
+GET http://localhost:3000/api/deluge/hosts
+###
+
+### Get specific host's data
+GET http://localhost:3000/api/deluge/host?host=22f297d112e04af5923d849058728c96
+###
+
+### Get specific torrent's status
+GET http://localhost:3000/api/deluge/torrent/status?torrentId=7be549f38fae577b39bcdc9a89a8579e92e23aed
+###
+
+### Get specific torrent's status
+GET http://localhost:3000/api/deluge/torrent?torrentId=7be549f38fae577b39bcdc9a89a8579e92e23aed
+###
+
+### Get specific torrent's speed
+GET http://localhost:3000/api/deluge/torrent/speed?torrentId=7be549f38fae577b39bcdc9a89a8579e92e23aed
+###

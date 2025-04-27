@@ -37,10 +37,10 @@ export const columns: ColumnDef<NormalizedTorrent>[] = [
     id: 'state',
     accessorKey: 'state', // assumes your DelugeTorrent has a `state: string` field
     header: 'Status', // no title, just the dot
-    enableSorting: false, // disable sorting on this column
+    enableSorting: true, // disable sorting on this column
     cell: ({ getValue }) => {
       const state = getValue<TorrentState>();
-      const colorMap: Record<string, string> = {
+      const colorMap: Record<TorrentState, string> = {
         downloading: 'text-green-500',
         seeding: 'text-blue-500',
         paused: 'text-gray-500',
