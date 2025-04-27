@@ -116,23 +116,40 @@ export function DataTable<T extends object>({
           </TableBody>
         </Table>
       </div>
-      <div className='flex items-center justify-end space-x-2 py-4'>
-        <Button
-          variant='outline'
-          size='sm'
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          Previous
-        </Button>
-        <Button
-          variant='outline'
-          size='sm'
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          Next
-        </Button>
+      {/* ←– NEW: pagination summary + controls */}
+      <div className='flex items-center justify-between space-x-4 py-4 px-2'>
+        {/* Left side: page info and total rows */}
+        <div className='text-sm text-muted-foreground'>
+          Page{' '}
+          <span className='font-medium'>
+            {table.getState().pagination.pageIndex + 1}
+          </span>{' '}
+          of <span className='font-medium'>{table.getPageCount()}</span> | Total
+          Rows:{' '}
+          <span className='font-medium'>
+            {table.getCoreRowModel().rows.length}
+          </span>
+        </div>
+
+        {/* Right side: prev/next buttons */}
+        <div className='flex space-x-2'>
+          <Button
+            variant='outline'
+            size='sm'
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            Previous
+          </Button>
+          <Button
+            variant='outline'
+            size='sm'
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            Next
+          </Button>
+        </div>
       </div>
     </div>
   );
