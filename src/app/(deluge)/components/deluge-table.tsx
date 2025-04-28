@@ -31,6 +31,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
+import { AddTorrentDialog } from '@/app/(deluge)/components/add-torrent-dialog';
 import { Label, NormalizedTorrent, TorrentState } from '@ctrl/shared-torrent';
 import { ArrowUpDown } from 'lucide-react';
 
@@ -69,84 +70,87 @@ export function DelugeTable({ columns, data, labels }: DelugeTableProps) {
   return (
     <div>
       {/* ——— Filter Bar ——— */}
-      <div className='flex flex-wrap gap-4 py-4'>
-        {/*/!* Name search *!/*/}
-        <Input
-          placeholder='Search by name...'
-          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
-          onChange={(e) =>
-            table.getColumn('name')?.setFilterValue(e.currentTarget.value)
-          }
-          className='max-w-sm'
-        />
-        {/* State dropdown */}
-        <Select
-          value={
-            (table.getColumn('state')?.getFilterValue() as string) ?? 'all'
-          }
-          onValueChange={(val) =>
-            table
-              .getColumn('state')
-              ?.setFilterValue(val === 'all' ? undefined : val)
-          }
-        >
-          <SelectTrigger className='w-40'>
-            <SelectValue placeholder='Filter by state' />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={'all'}>All States</SelectItem>
-            {stateOptions.map((opt) => (
-              <SelectItem key={opt} value={opt}>
-                {opt}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        {/* Label dropdown */}
-        <Select
-          value={
-            (table.getColumn('label')?.getFilterValue() as string) ?? 'all'
-          }
-          onValueChange={(val) =>
-            table
-              .getColumn('label')
-              ?.setFilterValue(val === 'all' ? undefined : val)
-          }
-        >
-          <SelectTrigger className='w-40'>
-            <SelectValue placeholder='Filter by label' />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value='all'>All Labels</SelectItem>
-            {labelOptions.map((opt) => (
-              <SelectItem key={opt} value={opt}>
-                {opt}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Select
-          value={
-            (table.getColumn('savePath')?.getFilterValue() as string) ?? 'all'
-          }
-          onValueChange={(val) =>
-            table
-              .getColumn('savePath')
-              ?.setFilterValue(val === 'all' ? undefined : val)
-          }
-        >
-          <SelectTrigger className='w-48'>
-            <SelectValue placeholder='Filter by path' />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value='all'>All Paths</SelectItem>
-            {pathOptions.map((path) => (
-              <SelectItem key={path} value={path}>
-                {path}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>{' '}
+      <div className='flex items-center justify-between py-4'>
+        <AddTorrentDialog />
+        <div className='flex flex-wrap justify-end gap-4 flex-1'>
+          {/*/!* Name search *!/*/}
+          <Input
+            placeholder='Search by name...'
+            value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+            onChange={(e) =>
+              table.getColumn('name')?.setFilterValue(e.currentTarget.value)
+            }
+            className='max-w-sm'
+          />
+          {/* State dropdown */}
+          <Select
+            value={
+              (table.getColumn('state')?.getFilterValue() as string) ?? 'all'
+            }
+            onValueChange={(val) =>
+              table
+                .getColumn('state')
+                ?.setFilterValue(val === 'all' ? undefined : val)
+            }
+          >
+            <SelectTrigger className='w-40'>
+              <SelectValue placeholder='Filter by state' />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={'all'}>All States</SelectItem>
+              {stateOptions.map((opt) => (
+                <SelectItem key={opt} value={opt}>
+                  {opt}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {/* Label dropdown */}
+          <Select
+            value={
+              (table.getColumn('label')?.getFilterValue() as string) ?? 'all'
+            }
+            onValueChange={(val) =>
+              table
+                .getColumn('label')
+                ?.setFilterValue(val === 'all' ? undefined : val)
+            }
+          >
+            <SelectTrigger className='w-40'>
+              <SelectValue placeholder='Filter by label' />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value='all'>All Labels</SelectItem>
+              {labelOptions.map((opt) => (
+                <SelectItem key={opt} value={opt}>
+                  {opt}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select
+            value={
+              (table.getColumn('savePath')?.getFilterValue() as string) ?? 'all'
+            }
+            onValueChange={(val) =>
+              table
+                .getColumn('savePath')
+                ?.setFilterValue(val === 'all' ? undefined : val)
+            }
+          >
+            <SelectTrigger className='w-48'>
+              <SelectValue placeholder='Filter by path' />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value='all'>All Paths</SelectItem>
+              {pathOptions.map((path) => (
+                <SelectItem key={path} value={path}>
+                  {path}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>{' '}
+        </div>
       </div>
 
       <div className='rounded-md border'>
