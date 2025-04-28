@@ -78,6 +78,14 @@ export const columns: ColumnDef<NormalizedTorrent>[] = [
     },
   },
   {
+    accessorKey: 'queuePosition',
+    header: 'Queue',
+    cell: (info) => {
+      const value = info.getValue<number>();
+      return value != 0 ? value : '';
+    },
+  },
+  {
     accessorKey: 'name',
     header: 'Name',
     cell: (info) => info.getValue<string>(),
@@ -148,9 +156,7 @@ export const columns: ColumnDef<NormalizedTorrent>[] = [
               >
                 Pause
               </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => navigator.clipboard.writeText(torrent.id)}
-              >
+              <DropdownMenuItem onClick={() => console.log(torrent.id)}>
                 Resume
               </DropdownMenuItem>
               <DropdownMenuSeparator />
