@@ -1,4 +1,4 @@
-// app/(deluge)/components/DelugeTable.tsx
+// app/(deluge)/components/deluge-table.tsx
 'use client';
 
 import {

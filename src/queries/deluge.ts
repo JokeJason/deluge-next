@@ -1,15 +1,15 @@
-import { delugeApi } from '@/lib/delugeApi';
+import { api } from '@/lib/api';
 import { DefaultResponse } from '@ctrl/deluge';
 import { AllClientData, NormalizedTorrent } from '@ctrl/shared-torrent';
 
 export async function fetchAllData(): Promise<AllClientData> {
-  const { data } = await delugeApi.get('/'); // GET /api/deluge
+  const { data } = await api.get('/'); // GET /api/deluge
   if (!data.success) throw new Error(data.error);
   return data.data as AllClientData;
 }
 
 export async function fetchTorrent(id: string): Promise<NormalizedTorrent> {
-  const { data } = await delugeApi.get('/torrent', {
+  const { data } = await api.get('/torrent', {
     params: { torrentId: id },
   });
   if (!data.success) throw new Error(data.error);
@@ -17,7 +17,7 @@ export async function fetchTorrent(id: string): Promise<NormalizedTorrent> {
 }
 
 export async function fetchLabels(): Promise<string[]> {
-  const { data } = await delugeApi.get('/labels');
+  const { data } = await api.get('/labels');
   if (!data.success) throw new Error(data.error);
   return data.data.result as string[];
 }
@@ -27,7 +27,7 @@ export async function updateLabel(
   torrentId: string,
   label: string,
 ): Promise<NormalizedTorrent> {
-  const { data } = await delugeApi.put('/torrent/label', {
+  const { data } = await api.put('/torrent/label', {
     torrentId,
     label,
   });
@@ -36,7 +36,7 @@ export async function updateLabel(
 }
 
 export async function removeTorrent(torrentId: string): Promise<Boolean> {
-  const { data } = await delugeApi.delete('/torrent', {
+  const { data } = await api.delete('/torrent', {
     params: { torrentId },
   });
   if (!data.success) throw new Error(data.error);
@@ -46,7 +46,7 @@ export async function removeTorrent(torrentId: string): Promise<Boolean> {
 export async function verifyTorrent(
   torrentId: string,
 ): Promise<DefaultResponse> {
-  const { data } = await delugeApi.post('/torrent/verify', {
+  const { data } = await api.post('/torrent/verify', {
     torrentId,
   });
   if (!data.success) throw new Error(data.error);

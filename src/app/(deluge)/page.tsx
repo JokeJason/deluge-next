@@ -1,8 +1,8 @@
 // app/(deluge)/page.tsx
 'use client';
 
-import { columns } from '@/app/(deluge)/components/Columns';
-import { DelugeTable } from '@/app/(deluge)/components/DelugeTable';
+import { columns } from '@/app/(deluge)/components/columns';
+import { DelugeTable } from '@/app/(deluge)/components/deluge-table';
 import { useAllData } from '@/hooks/queries/useAllData';
 import { useTorrents } from '@/hooks/queries/useTorrents';
 import { NormalizedTorrent, TorrentState } from '@ctrl/shared-torrent';

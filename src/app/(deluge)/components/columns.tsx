@@ -1,8 +1,8 @@
-// app/(deluge)/Columns.tsx
+// app/(deluge)/columns.tsx
 'use client';
 
-import { LabelDialog } from '@/app/(deluge)/components/LabelDialog';
-import { RemoveDialog } from '@/app/(deluge)/components/RemoveDialog';
+import { LabelDialog } from '@/app/(deluge)/components/label-dialog';
+import { RemoveDialog } from '@/app/(deluge)/components/remove-dialog';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
