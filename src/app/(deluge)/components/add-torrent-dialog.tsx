@@ -107,23 +107,25 @@ export function AddTorrentDialog() {
           >
             <FormField
               control={form.control}
-              name='torrentFile'
-              render={({ field: { onChange, value, ...field } }) => (
-                <FormItem>
-                  <FormLabel>Torrent File</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      type='file'
-                      accept='.torrent'
-                      multiple={false}
-                      onChange={(e) => onChange(e.target.files)}
-                      className='cursor-pointer'
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              name={'torrentFile'}
+              render={({ field: { onChange, value, ...field } }) => {
+                return (
+                  <FormItem>
+                    <FormLabel>Torrent File</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type='file'
+                        accept='.torrent'
+                        multiple={false}
+                        onChange={(e) => onChange(e.target.files)}
+                        className={`cursor-pointer file:px-4 file:py-2`}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
             />
             <DialogFooter>
               <Button type='submit'>Preview Torrent</Button>
