@@ -1,4 +1,4 @@
-// app/(deluge)/columns.tsx
+// app/(deluge)/deluge-columns.tsx
 'use client';
 
 import { LabelDialog } from '@/app/(deluge)/components/label-dialog';
@@ -41,7 +41,7 @@ const formatETA = (secs: number) => {
   return [h && `${h}h`, m && `${m}m`, `${s}s`].filter(Boolean).join(' ');
 };
 
-export const columns: ColumnDef<NormalizedTorrent>[] = [
+export const DelugeColumns: ColumnDef<NormalizedTorrent>[] = [
   {
     id: 'state',
     accessorKey: 'state', // assumes your DelugeTorrent has a `state: string` field

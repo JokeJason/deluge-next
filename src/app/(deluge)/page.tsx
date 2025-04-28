@@ -1,7 +1,7 @@
 // app/(deluge)/page.tsx
 'use client';
 
-import { columns } from '@/app/(deluge)/components/columns';
+import { DelugeColumns } from '@/app/(deluge)/components/deluge-columns';
 import { DelugeTable } from '@/app/(deluge)/components/deluge-table';
 import { useAllData } from '@/hooks/queries/useAllData';
 import { useTorrents } from '@/hooks/queries/useTorrents';
@@ -55,7 +55,11 @@ export default function DelugePage() {
         </p>
       )}
       {allData && (
-        <DelugeTable columns={columns} data={merged} labels={allData.labels} />
+        <DelugeTable
+          columns={DelugeColumns}
+          data={merged}
+          labels={allData.labels}
+        />
       )}
     </div>
   );

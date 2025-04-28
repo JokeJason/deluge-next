@@ -1,5 +1,8 @@
+// app/(deluge)/components/add-torrent-dialog.tsx
 'use client';
 
+import { TorrentFilesColumns } from '@/app/(deluge)/components/torrent-files-columns';
+import { TorrentFilesTable } from '@/app/(deluge)/components/torrent-files-table';
 import { uploadTorrent } from '@/app/actions/upload-torrent';
 import { Button } from '@/components/ui/button';
 import {
@@ -21,11 +24,32 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useLabels } from '@/hooks/queries/useLabels';
-import { TorrentInfo } from '@ctrl/deluge';
+import {
+  TorrentContentDir,
+  TorrentContentFile,
+  TorrentInfo,
+} from '@ctrl/deluge';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+
+export function flattenContents(
+  node: Record<string, TorrentContentDir | TorrentContentFile>,
+): TorrentContentFile[] {
+  return Object.values(node).flatMap((item) => {
+    if (item.type === 'file') {
+      return [item];
+    }
+
+    // assert that .contents is actually the same Record<string, …> shape
+    const dir = item as TorrentContentDir & {
+      contents: Record<string, TorrentContentDir | TorrentContentFile>;
+    };
+
+    return flattenContents(dir.contents);
+  });
+}
 
 const formSchema = z.object({
   torrentFile: z
@@ -93,7 +117,7 @@ export function AddTorrentDialog() {
           Add Torrent
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className={'max-w-4xl'}>
         <DialogHeader>
           <DialogTitle>Upload a Torrent</DialogTitle>
           <DialogDescription>
@@ -132,6 +156,14 @@ export function AddTorrentDialog() {
             </DialogFooter>
           </form>
         </Form>
+        {torrentInfo && (
+          <div className={'mt-4 overflow-x-auto'}>
+            <TorrentFilesTable
+              columns={TorrentFilesColumns}
+              data={flattenContents(torrentInfo.result.files_tree.contents)}
+            />
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   );
