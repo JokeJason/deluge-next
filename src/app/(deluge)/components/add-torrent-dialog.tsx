@@ -119,7 +119,7 @@ export function AddTorrentDialog() {
                         accept='.torrent'
                         multiple={false}
                         onChange={(e) => onChange(e.target.files)}
-                        className={`cursor-pointer file:px-4 file:py-2`}
+                        className={`cursor-pointer file:px-4 file:py-1`}
                       />
                     </FormControl>
                     <FormMessage />
