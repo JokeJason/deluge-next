@@ -8,12 +8,13 @@ import {
   SortingState,
   useReactTable,
 } from '@tanstack/react-table';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import {
   Table,
   TableBody,
   TableCell,
+  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -23,11 +24,34 @@ import { TorrentContentFile } from '@ctrl/deluge';
 interface TorrentFilesTableProps {
   columns: ColumnDef<TorrentContentFile>[];
   data: TorrentContentFile[];
+  setSelectedIndices: (indices: number[]) => void;
 }
 
-export function TorrentFilesTable({ columns, data }: TorrentFilesTableProps) {
+function calculateRowSelection(rowSelection: Record<string, boolean>): number {
+  return Object.values(rowSelection).filter((value) => value).length;
+}
+
+function getSelectedFileIndices(
+  rowSelection: Record<string, boolean>,
+  data: TorrentContentFile[],
+): number[] {
+  return Object.entries(rowSelection)
+    .filter(([, isSelected]) => isSelected)
+    .map(([rowId]) => data[Number(rowId)].index);
+}
+
+export function TorrentFilesTable({
+  columns,
+  data,
+  setSelectedIndices,
+}: TorrentFilesTableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [rowSelection, setRowSelection] = useState({});
+
+  useEffect(() => {
+    const selectedIndices = getSelectedFileIndices(rowSelection, data);
+    setSelectedIndices(selectedIndices);
+  }, [rowSelection]);
 
   const table = useReactTable({
     data,
@@ -41,6 +65,8 @@ export function TorrentFilesTable({ columns, data }: TorrentFilesTableProps) {
       rowSelection,
     },
   });
+
+  const selectedCount = calculateRowSelection(rowSelection);
 
   return (
     <div className={'w-full'}>
@@ -92,6 +118,13 @@ export function TorrentFilesTable({ columns, data }: TorrentFilesTableProps) {
               </TableRow>
             )}
           </TableBody>
+          <TableFooter>
+            <TableRow>
+              <TableCell colSpan={columns.length} className='text-right'>
+                Selected {selectedCount} of {data.length} files
+              </TableCell>
+            </TableRow>
+          </TableFooter>
         </Table>
       </div>
     </div>

@@ -3,6 +3,7 @@
 
 import { TorrentFilesColumns } from '@/app/(deluge)/components/torrent-files-columns';
 import { TorrentFilesTable } from '@/app/(deluge)/components/torrent-files-table';
+import { addTorrent } from '@/app/actions/add-torrent';
 import { uploadTorrent } from '@/app/actions/upload-torrent';
 import { Button } from '@/components/ui/button';
 import {
@@ -70,13 +71,15 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export function AddTorrentDialog() {
+  const [open, setOpen] = useState(false);
+
   const { data: labels } = useLabels();
 
   const [isUploading, setIsUploading] = useState(false);
   const [torrentFiles, setTorrentFiles] = useState<
     { name: string; length: number }[]
   >([]);
-  const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set());
+  const [selectedIndices, setSelectedIndices] = useState<number[]>([]);
 
   const [tmpPath, setTmpPath] = useState<string | null>(null);
   const [torrentInfo, setTorrentInfo] = useState<TorrentInfo | null>(null);
@@ -98,6 +101,21 @@ export function AddTorrentDialog() {
     setTorrentInfo(result.torrentInfo);
   };
 
+  const onAdd = async () => {
+    if (!tmpPath) return;
+    if (!torrentInfo) return;
+
+    const result = await addTorrent(
+      tmpPath,
+      flattenContents(torrentInfo?.result.files_tree.contents),
+      selectedIndices,
+    );
+
+    if (result) {
+      console.log(result);
+    }
+  };
+
   useEffect(() => {
     console.log('torrentInfo', torrentInfo);
   }, [torrentInfo]);
@@ -111,7 +129,7 @@ export function AddTorrentDialog() {
   }
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button className={'bg-green-500 text-white hover:bg-green-600'}>
           Add Torrent
@@ -157,12 +175,18 @@ export function AddTorrentDialog() {
           </form>
         </Form>
         {torrentInfo && (
-          <div className={'mt-4 overflow-x-auto'}>
-            <TorrentFilesTable
-              columns={TorrentFilesColumns}
-              data={flattenContents(torrentInfo.result.files_tree.contents)}
-            />
-          </div>
+          <>
+            <div className='mt-4 overflow-x-auto'>
+              <TorrentFilesTable
+                columns={TorrentFilesColumns}
+                data={flattenContents(torrentInfo.result.files_tree.contents)}
+                setSelectedIndices={setSelectedIndices}
+              />
+            </div>
+            <div className='mt-4 flex justify-end'>
+              <Button onClick={onAdd}>Add Torrent</Button>
+            </div>
+          </>
         )}
       </DialogContent>
     </Dialog>

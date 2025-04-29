@@ -38,10 +38,11 @@ export const TorrentFilesColumns: ColumnDef<TorrentContentFile>[] = [
   },
   {
     id: 'select',
+    header: 'Select',
     cell: ({ row }) => (
       <div className={'flex items-center justify-center p-2'}>
         <Checkbox
-          className={'py-1'}
+          className={'my-1'}
           checked={row.getIsSelected()}
           onCheckedChange={(value) => row.toggleSelected(!!value)}
         />
