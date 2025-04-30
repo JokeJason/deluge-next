@@ -7,5 +7,6 @@ export function useLabels() {
   return useQuery({
     queryKey: ['labels'],
     queryFn: fetchLabels,
+    staleTime: 5 * 60 * 1000,
   });
 }

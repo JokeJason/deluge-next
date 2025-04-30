@@ -7,6 +7,6 @@ export function useAllData() {
   return useQuery({
     queryKey: ['allData'],
     queryFn: fetchAllData,
-    refetchInterval: 1000 * 30,
+    refetchInterval: 1000 * 120,
   });
 }

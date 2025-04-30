@@ -8,7 +8,7 @@ export function useTorrents(torrentIds: string[]) {
     queries: torrentIds.map((id) => ({
       queryKey: ['torrent', id],
       queryFn: () => fetchTorrent(id),
-      refetchInterval: 1000 * 10, // 10 seconds
+      refetchInterval: 1000 * 20, // 10 seconds
     })),
   });
 }
