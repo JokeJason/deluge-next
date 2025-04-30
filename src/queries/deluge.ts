@@ -35,12 +35,12 @@ export async function updateLabel(
   return data.data as NormalizedTorrent;
 }
 
-export async function removeTorrent(torrentId: string): Promise<Boolean> {
+export async function removeTorrent(torrentId: string): Promise<boolean> {
   const { data } = await api.delete('/torrent', {
     params: { torrentId },
   });
   if (!data.success) throw new Error(data.error);
-  return data.data as Boolean;
+  return data.data as boolean;
 }
 
 export async function verifyTorrent(

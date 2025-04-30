@@ -13,7 +13,7 @@ const deluge = new Deluge({
 export async function removeTorrent(
   torrentId: string,
   removeData: boolean,
-): Promise<{ response: Boolean }> {
+): Promise<{ response: boolean }> {
   const response = await deluge.removeTorrent(torrentId, removeData);
 
   return { response: response.result.valueOf() };

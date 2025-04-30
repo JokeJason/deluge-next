@@ -39,7 +39,7 @@ export function LoginForm() {
       } else {
         setError('Invalid password. Please try again.');
       }
-    } catch (err) {
+    } catch {
       setError('Failed to connect to Deluge. Please try again.');
     } finally {
       setIsLoading(false);

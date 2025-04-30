@@ -51,7 +51,7 @@ export function TorrentFilesTable({
   useEffect(() => {
     const selectedIndices = getSelectedFileIndices(rowSelection, data);
     setSelectedIndices(selectedIndices);
-  }, [rowSelection]);
+  }, [rowSelection, setSelectedIndices, data]);
 
   const table = useReactTable({
     data,

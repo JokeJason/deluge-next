@@ -25,7 +25,6 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { useLabels } from '@/hooks/queries/useLabels';
 import {
   TorrentContentDir,
   TorrentContentFile,
@@ -75,12 +74,6 @@ type FormValues = z.infer<typeof formSchema>;
 export function AddTorrentDialog() {
   const queryClient = useQueryClient();
 
-  const { data: labels } = useLabels();
-
-  const [isUploading, setIsUploading] = useState(false);
-  const [torrentFiles, setTorrentFiles] = useState<
-    { name: string; length: number }[]
-  >([]);
   const [selectedIndices, setSelectedIndices] = useState<number[]>([]);
 
   const [tmpPath, setTmpPath] = useState<string | null>(null);
@@ -139,19 +132,22 @@ export function AddTorrentDialog() {
           >
             <FormField
               control={form.control}
-              name={'torrentFile'}
-              render={({ field: { onChange, value, ...field } }) => {
+              name='torrentFile'
+              render={({ field }) => {
+                const { onChange, onBlur, name, ref } = field;
                 return (
                   <FormItem>
                     <FormLabel>Torrent File</FormLabel>
                     <FormControl>
                       <Input
-                        {...field}
+                        name={name}
+                        ref={ref}
+                        onBlur={onBlur}
                         type='file'
                         accept='.torrent'
                         multiple={false}
                         onChange={(e) => onChange(e.target.files)}
-                        className={`cursor-pointer file:px-4 file:py-1`}
+                        className='cursor-pointer file:px-4 file:py-1'
                       />
                     </FormControl>
                     <FormMessage />
