@@ -3,13 +3,26 @@
 
 import { LabelDialog } from '@/app/(deluge)/components/label-dialog';
 import { RemoveDialog } from '@/app/(deluge)/components/remove-dialog';
+import {
+  queueBottom,
+  queueDown,
+  queueTop,
+  queueUp,
+} from '@/app/actions/change-torrent-queue';
+import {
+  pauseTorrent,
+  resumeTorrent,
+} from '@/app/actions/change-torrent-state';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
+  DropdownMenuPortal,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Progress } from '@/components/ui/progress';
@@ -21,7 +34,17 @@ import {
 import { useVerifyTorrent } from '@/hooks/mutations/useVerifyTorrent';
 import { NormalizedTorrent, TorrentState } from '@ctrl/shared-torrent';
 import { ColumnDef } from '@tanstack/react-table';
-import { Circle, MoreHorizontal } from 'lucide-react';
+import {
+  ArrowDownIcon,
+  ArrowDownToLineIcon,
+  ArrowUpIcon,
+  ArrowUpToLineIcon,
+  Circle,
+  DeleteIcon,
+  MoreHorizontal,
+  PauseIcon,
+  PlayIcon,
+} from 'lucide-react';
 import { useState } from 'react';
 
 const formatBytes = (n: number) => {
@@ -148,23 +171,51 @@ export const DelugeColumns: ColumnDef<NormalizedTorrent>[] = [
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align='end'>
-              <DropdownMenuLabel className={'font-bold'}>
-                Actions
-              </DropdownMenuLabel>
-              <DropdownMenuItem
-                onClick={() => navigator.clipboard.writeText(torrent.id)}
-              >
-                Pause
+              <DropdownMenuItem onClick={() => pauseTorrent(torrent.id)}>
+                <PauseIcon /> Pause
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => console.log(torrent.id)}>
-                Resume
+              <DropdownMenuItem onClick={() => resumeTorrent(torrent.id)}>
+                <PlayIcon /> Resume
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>View customer</DropdownMenuItem>
-              <DropdownMenuItem>View payment details</DropdownMenuItem>
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>Queue</DropdownMenuSubTrigger>
+                <DropdownMenuPortal>
+                  <DropdownMenuSubContent>
+                    <DropdownMenuItem
+                      onClick={() => {
+                        queueTop(torrent.id);
+                      }}
+                    >
+                      <ArrowUpToLineIcon /> Top
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => {
+                        queueUp(torrent.id);
+                      }}
+                    >
+                      <ArrowUpIcon /> Up
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => {
+                        queueDown(torrent.id);
+                      }}
+                    >
+                      <ArrowDownIcon /> Down
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => {
+                        queueBottom(torrent.id);
+                      }}
+                    >
+                      <ArrowDownToLineIcon /> Bottom
+                    </DropdownMenuItem>
+                  </DropdownMenuSubContent>
+                </DropdownMenuPortal>
+              </DropdownMenuSub>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => setRemoveDialogOpen(true)}>
-                Remove Torrent
+                <DeleteIcon /> Remove Torrent
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem

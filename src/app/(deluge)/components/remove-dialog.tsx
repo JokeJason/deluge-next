@@ -1,3 +1,4 @@
+import { removeTorrent } from '@/app/actions/remove-torrent';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -8,7 +9,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { useUpdateTorrentLabel } from '@/hooks/mutations/useUpdateTorrentLabel';
 import { NormalizedTorrent } from '@ctrl/shared-torrent';
 
 export interface RemoveDialogProps {
@@ -22,7 +22,7 @@ export function RemoveDialog({
   setLabelDialogOpen,
   torrent,
 }: RemoveDialogProps) {
-  const mutation = useUpdateTorrentLabel();
+  // TODO: add option of deleting torrent only, without deleting data
 
   return (
     <AlertDialog
@@ -39,7 +39,12 @@ export function RemoveDialog({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction className={'bg-red-500'}>Delete</AlertDialogAction>
+          <AlertDialogAction
+            className={'bg-red-500'}
+            onClick={() => removeTorrent(torrent.id, true)}
+          >
+            Delete
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
