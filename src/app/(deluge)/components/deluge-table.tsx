@@ -32,8 +32,14 @@ import {
 } from '@/components/ui/table';
 
 import { AddTorrentDialog } from '@/app/(deluge)/components/add-torrent-dialog';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { Label, NormalizedTorrent, TorrentState } from '@ctrl/shared-torrent';
-import { ArrowUpDown } from 'lucide-react';
+import { useQueryClient } from '@tanstack/react-query';
+import { ArrowUpDown, RefreshCw } from 'lucide-react';
 
 interface DelugeTableProps {
   columns: ColumnDef<NormalizedTorrent>[];
@@ -44,6 +50,8 @@ interface DelugeTableProps {
 const stateOptions: TorrentState[] = Object.values(TorrentState);
 
 export function DelugeTable({ columns, data, labels }: DelugeTableProps) {
+  const queryClient = useQueryClient();
+
   const labelOptions = labels.map((label) => label.name);
   const pathOptions = Array.from(new Set(data.map((t) => t.savePath)));
 
@@ -89,8 +97,10 @@ export function DelugeTable({ columns, data, labels }: DelugeTableProps) {
             }
             onValueChange={(val) =>
               table
-                .getColumn('state')
-                ?.setFilterValue(val === 'all' ? undefined : val)
+                .getColumn('label')
+                ?.setFilterValue(
+                  val === 'all' ? undefined : val === '__NO_LABEL__' ? '' : val,
+                )
             }
           >
             <SelectTrigger className='w-40'>
@@ -122,8 +132,11 @@ export function DelugeTable({ columns, data, labels }: DelugeTableProps) {
             <SelectContent>
               <SelectItem value='all'>All Labels</SelectItem>
               {labelOptions.map((opt) => (
-                <SelectItem key={opt} value={opt}>
-                  {opt}
+                <SelectItem
+                  key={opt || 'empty'}
+                  value={opt === '' ? '__NO_LABEL__' : opt}
+                >
+                  {opt || 'No Label'}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -150,6 +163,21 @@ export function DelugeTable({ columns, data, labels }: DelugeTableProps) {
               ))}
             </SelectContent>
           </Select>{' '}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className={'pt-1'}>
+                <RefreshCw
+                  className={'hover:animate-spin animate-once'}
+                  onClick={() => {
+                    queryClient.invalidateQueries({ queryKey: ['allData'] });
+                  }}
+                />
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Refresh</p>
+            </TooltipContent>
+          </Tooltip>
         </div>
       </div>
 

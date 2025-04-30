@@ -17,8 +17,6 @@ export async function addTorrent(
   torrentContentFiles: TorrentContentFile[],
   selectedIndices: number[],
 ): Promise<{ result: AddTorrentResponse }> {
-  console.log('param: ', tmpPath, torrentContentFiles, selectedIndices);
-
   const count = torrentContentFiles.length;
 
   const file_priorities = Array<number>(count).fill(0);

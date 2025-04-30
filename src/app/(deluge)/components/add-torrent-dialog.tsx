@@ -8,6 +8,7 @@ import { uploadTorrent } from '@/app/actions/upload-torrent';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -31,7 +32,8 @@ import {
   TorrentInfo,
 } from '@ctrl/deluge';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -71,7 +73,7 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export function AddTorrentDialog() {
-  const [open, setOpen] = useState(false);
+  const queryClient = useQueryClient();
 
   const { data: labels } = useLabels();
 
@@ -112,24 +114,12 @@ export function AddTorrentDialog() {
     );
 
     if (result) {
-      console.log(result);
+      queryClient.invalidateQueries({ queryKey: ['allData'] });
     }
   };
 
-  useEffect(() => {
-    console.log('torrentInfo', torrentInfo);
-  }, [torrentInfo]);
-
-  useEffect(() => {
-    console.log('tmpPath', tmpPath);
-  }, [tmpPath]);
-
-  async function onSubmit(data: z.infer<typeof formSchema>) {
-    throw new Error('Not implemented');
-  }
-
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog>
       <DialogTrigger asChild>
         <Button className={'bg-green-500 text-white hover:bg-green-600'}>
           Add Torrent
@@ -183,9 +173,11 @@ export function AddTorrentDialog() {
                 setSelectedIndices={setSelectedIndices}
               />
             </div>
-            <div className='mt-4 flex justify-end'>
-              <Button onClick={onAdd}>Add Torrent</Button>
-            </div>
+            <DialogClose asChild>
+              <div className='mt-4 flex justify-end'>
+                <Button onClick={onAdd}>Add Torrent</Button>
+              </div>
+            </DialogClose>
           </>
         )}
       </DialogContent>
