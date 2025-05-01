@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export const api = axios.create({
-  baseURL: `${process.env.NEXT_PUBLIC_BASE_URL}/api/deluge`,
+  baseURL: `${process.env.BASE_URL}/api/deluge`,
   timeout: 10_000,
 });
 
