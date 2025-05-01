@@ -1,7 +1,15 @@
+'use client';
+
+import 'client-only';
+
 import axios from 'axios';
 
+import { useCountStore } from '@/lib/store';
+
+const delugeNextBaseUrl = useCountStore.getState().delugeNextBaseUrl;
+
 export const api = axios.create({
-  baseURL: `${process.env.BASE_URL}/api/deluge`,
+  baseURL: `${delugeNextBaseUrl}/api/deluge`,
   timeout: 10_000,
 });
 
