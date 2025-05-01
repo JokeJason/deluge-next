@@ -10,16 +10,19 @@ import {
 } from '@/components/ui/tooltip';
 import { NormalizedTorrent, TorrentState } from '@ctrl/shared-torrent';
 import { ColumnDef } from '@tanstack/react-table';
+import byteSize from 'byte-size';
 import { Circle } from 'lucide-react';
 
 const formatBytes = (n: number) => {
-  if (n < 1e6) return `${(n / 1024).toFixed(1)} KB`;
-  if (n < 1e9) return `${(n / 1e6).toFixed(1)} MB`;
-  return `${(n / 1e9).toFixed(1)} GB`;
+  if (n === 0) return '0 B';
+  return byteSize(n, { precision: 1 }).toString();
 };
 
-const formatSpeed = (n: number) =>
-  n > 0 ? `${(n / 1024).toFixed(1)} KB/s` : '—';
+const formatSpeed = (n: number) => {
+  if (n <= 0) return '—';
+  const size = byteSize(n, { precision: 1 });
+  return `${size.value} ${size.unit}/s`;
+};
 
 const formatETA = (secs: number) => {
   if (secs <= 0) return '—';
