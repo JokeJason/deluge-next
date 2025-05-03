@@ -45,11 +45,11 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
           )}
         />
         {state?.errors?.password && (
-          <p className='text-destructive text-sm mt-1'>
-            {state.errors.password.map((item) => (
-              <div>{item}</div>
+          <div className='text-destructive text-sm mt-1'>
+            {state.errors.password.map((item, index) => (
+              <div key={index}>{item}</div>
             ))}
-          </p>
+          </div>
         )}
 
         <Button type='submit' className='w-full' disabled={pending}>

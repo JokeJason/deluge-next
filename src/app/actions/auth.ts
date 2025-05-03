@@ -9,24 +9,43 @@ export async function login(
   _prevState: LoginState,
   formData: FormData,
 ): Promise<LoginState> {
-  const parsed = LoginSchema.safeParse({ password: formData.get('password') });
+  try {
+    const parsed = LoginSchema.safeParse({
+      password: formData.get('password'),
+    });
 
-  if (!parsed.success) {
-    return { errors: parsed.error.flatten().fieldErrors };
+    if (!parsed.success) {
+      return { errors: parsed.error.flatten().fieldErrors };
+    }
+
+    const { password } = parsed.data;
+
+    const deluge = new Deluge({
+      baseUrl: process.env.DELUGE_URL,
+      password: password,
+      timeout: process.env.DELUGE_TIMEOUT
+        ? Number(process.env.DELUGE_TIMEOUT)
+        : undefined,
+    });
+
+    const loginSuccess = await deluge.login();
+    if (!loginSuccess) {
+      return {
+        errors: {
+          password: ['Invalid password. Please try again.'],
+        },
+      };
+    }
+  } catch (error) {
+    console.error('Login error: ', error);
+    return {
+      errors: {
+        password: [
+          `Authentication failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        ],
+      },
+    };
   }
 
-  const { password } = parsed.data;
-
-  const deluge = new Deluge({
-    baseUrl: process.env.DELUGE_URL,
-    password: password,
-    timeout: process.env.DELUGE_TIMEOUT
-      ? Number(process.env.DELUGE_TIMEOUT)
-      : undefined,
-  });
-
-  const loginSuccess = await deluge.login();
-  if (loginSuccess) {
-    redirect('/');
-  }
+  redirect('/');
 }
