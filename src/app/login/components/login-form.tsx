@@ -1,82 +1,68 @@
 'use client';
 
-import type React from 'react';
+import React, { useActionState } from 'react';
 
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { login } from '@/app/actions/auth';
 import { Button } from '@/components/ui/button';
+import { Form, FormField, FormItem, FormLabel } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { AlertCircle, Loader2 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { LoginState } from '@/lib/definitions';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Loader2 } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
-export function LoginForm() {
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
+const loginFormSchema = z.object({
+  password: z.string(),
+});
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    setIsLoading(true);
+interface LoginFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
-    try {
-      // This is where you would authenticate with your Deluge server
-      // For example:
-      // const response = await fetch('/api/auth/deluge', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ password }),
-      // })
+export function LoginForm({ className, ...props }: LoginFormProps) {
+  const [state, formAction, pending] = useActionState<LoginState, FormData>(
+    login,
+    undefined,
+  );
 
-      // Simulate authentication for demo purposes
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      // If password is "demo", consider it successful
-      if (password === 'demo') {
-        router.push('/dashboard');
-      } else {
-        setError('Invalid password. Please try again.');
-      }
-    } catch {
-      setError('Failed to connect to Deluge. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const form = useForm<z.infer<typeof loginFormSchema>>({
+    resolver: zodResolver(loginFormSchema),
+    defaultValues: {
+      password: '',
+    },
+  });
 
   return (
-    <form onSubmit={handleSubmit} className='space-y-4'>
-      {error && (
-        <Alert variant='destructive'>
-          <AlertCircle className='h-4 w-4' />
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
-
-      <div className='space-y-2'>
-        <Label htmlFor='password'>Password</Label>
-        <Input
-          id='password'
-          type='password'
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder='Enter your Deluge password'
-          required
+    <Form {...form}>
+      <form action={formAction} className='space-y-4'>
+        <FormField
+          name={'password'}
+          control={form.control}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Password</FormLabel>
+              <Input placeholder={'password'} {...field} />
+            </FormItem>
+          )}
         />
-      </div>
-
-      <Button type='submit' className='w-full' disabled={isLoading}>
-        {isLoading ? (
-          <>
-            <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-            Connecting...
-          </>
-        ) : (
-          'Login'
+        {state?.errors?.password && (
+          <p className='text-destructive text-sm mt-1'>
+            {state.errors.password.map((item) => (
+              <div>{item}</div>
+            ))}
+          </p>
         )}
-      </Button>
-    </form>
+
+        <Button type='submit' className='w-full' disabled={pending}>
+          {pending ? (
+            <>
+              <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+              Loading...
+            </>
+          ) : (
+            'Login'
+          )}
+        </Button>
+      </form>
+    </Form>
   );
 }

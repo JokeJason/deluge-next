@@ -165,7 +165,7 @@ export function DelugeTable({ columns, data, labels }: DelugeTableProps) {
           </Select>{' '}
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className={'pt-1'}>
+              <div className={'pt-1.5'}>
                 <RefreshCw
                   className={'hover:animate-spin animate-once'}
                   onClick={() => {

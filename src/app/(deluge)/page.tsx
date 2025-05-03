@@ -3,9 +3,9 @@ import 'server-only';
 import DelugePage from '@/app/(deluge)/components/deluge-page';
 
 export default async function Page() {
-  const delugeNextBaseUrl = process.env.DELUGE_NEXT_BASE_URL || '';
+  const delugeNextBaseUrl = process.env.DELUGE_NEXT_BASE_URL;
 
-  if (delugeNextBaseUrl !== '') {
+  if (delugeNextBaseUrl === undefined) {
     throw new Error('DELUGE_NEXT_BASE_URL is not defined');
   }
 
