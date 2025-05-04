@@ -4,8 +4,9 @@ import 'server-only';
 
 import { prisma } from '@/lib/db';
 import { LoginSchema, LoginState } from '@/lib/definitions';
-import { createSession } from '@/lib/session';
+import { createSession, deleteSession } from '@/lib/session';
 import { Deluge } from '@ctrl/deluge';
+import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 async function savePassword(password: string) {
@@ -85,4 +86,17 @@ export async function login(
   await createSession();
 
   redirect('/');
+}
+
+export async function signout() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get('deluge-next-session')?.value;
+
+  if (!token) {
+    redirect('/login');
+  }
+
+  await deleteSession(token);
+  cookieStore.delete('deluge-next-session');
+  redirect('/login');
 }

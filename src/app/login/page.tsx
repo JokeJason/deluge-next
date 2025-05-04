@@ -13,7 +13,7 @@ export default async function LoginPage() {
 
   const session = await decrypt(token);
 
-  const sessionExists = await prisma.session.findUnique({
+  const sessionExists = await prisma.session.findFirst({
     where: { id: session?.sessionId },
   });
 
