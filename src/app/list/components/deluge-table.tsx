@@ -1,4 +1,4 @@
-// app/(deluge)/components/deluge-table.tsx
+// app/list/components/deluge-list.tsx
 'use client';
 
 import {
@@ -31,7 +31,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-import { AddTorrentDialog } from '@/app/(deluge)/components/add-torrent-dialog';
+import { AddTorrentDialog } from '@/app/list/components/add-torrent-dialog';
 import {
   Tooltip,
   TooltipContent,
@@ -59,7 +59,7 @@ export function DelugeTable({ columns, data, labels }: DelugeTableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 20 });
 
-  // 2) configure the table instance
+  // 2) configure the list instance
   const table = useReactTable({
     data,
     columns,

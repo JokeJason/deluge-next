@@ -1,4 +1,4 @@
-// app/(deluge)/components/torrent-files-columns.tsx
+// app/list/components/torrent-files-columns.tsx
 
 import { Checkbox } from '@/components/ui/checkbox';
 import { TorrentContentFile } from '@ctrl/deluge';

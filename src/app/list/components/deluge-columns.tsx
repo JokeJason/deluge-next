@@ -1,7 +1,7 @@
-// app/(deluge)/deluge-columns.tsx
+// app/list/deluge-columns.tsx
 'use client';
 
-import { ActionCell } from '@/app/(deluge)/components/action-cell';
+import { ActionCell } from '@/app/list/components/action-cell';
 import { Progress } from '@/components/ui/progress';
 import {
   Tooltip,

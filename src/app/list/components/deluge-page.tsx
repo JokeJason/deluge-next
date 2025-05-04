@@ -1,8 +1,8 @@
-// app/(deluge)/page.tsx
+// app/list/page.tsx
 'use client';
 
-import { DelugeColumns } from '@/app/(deluge)/components/deluge-columns';
-import { DelugeTable } from '@/app/(deluge)/components/deluge-table';
+import { DelugeColumns } from '@/app/list/components/deluge-columns';
+import { DelugeTable } from '@/app/list/components/deluge-table';
 import { useAllData } from '@/hooks/queries/useAllData';
 import { useTorrents } from '@/hooks/queries/useTorrents';
 import { useCountStore } from '@/lib/store';
@@ -60,7 +60,6 @@ export default function DelugePage({ baseUrl }: DelugePageProps) {
 
   return (
     <div className='container mx-auto py-8'>
-      <h1 className='text-2xl font-bold mb-4'>Deluge Torrents</h1>
       {isLoading && <p>Loading...</p>}
       {isError && (
         <p className='text-red-500'>

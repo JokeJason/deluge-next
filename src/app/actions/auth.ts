@@ -1,15 +1,17 @@
 'use server';
 
+import 'server-only';
+
 import { prisma } from '@/lib/db';
 import { LoginSchema, LoginState } from '@/lib/definitions';
+import { createSession } from '@/lib/session';
 import { Deluge } from '@ctrl/deluge';
 import { redirect } from 'next/navigation';
-import 'server-only';
 
 async function savePassword(password: string) {
   await prisma.password.create({
     data: {
-      password: password,
+      value: password,
     },
   });
 }
@@ -19,7 +21,7 @@ async function getPassword(): Promise<string | null> {
   if (!password) {
     return null;
   }
-  return password.password;
+  return password.value;
 }
 
 export async function login(
@@ -79,6 +81,8 @@ export async function login(
       },
     };
   }
+
+  await createSession();
 
   redirect('/');
 }

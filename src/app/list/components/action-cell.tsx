@@ -1,7 +1,5 @@
 'use client';
 
-import { LabelDialog } from '@/app/(deluge)/components/label-dialog';
-import { RemoveDialog } from '@/app/(deluge)/components/remove-dialog';
 import {
   queueBottom,
   queueDown,
@@ -12,6 +10,8 @@ import {
   pauseTorrent,
   resumeTorrent,
 } from '@/app/actions/change-torrent-state';
+import { LabelDialog } from '@/app/list/components/label-dialog';
+import { RemoveDialog } from '@/app/list/components/remove-dialog';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,

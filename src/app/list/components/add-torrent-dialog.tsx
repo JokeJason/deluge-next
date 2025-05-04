@@ -1,10 +1,10 @@
-// app/(deluge)/components/add-torrent-dialog.tsx
+// app/list/components/add-torrent-dialog.tsx
 'use client';
 
-import { TorrentFilesColumns } from '@/app/(deluge)/components/torrent-files-columns';
-import { TorrentFilesTable } from '@/app/(deluge)/components/torrent-files-table';
 import { addTorrent } from '@/app/actions/add-torrent';
 import { uploadTorrent } from '@/app/actions/upload-torrent';
+import { TorrentFilesColumns } from '@/app/list/components/torrent-files-columns';
+import { TorrentFilesTable } from '@/app/list/components/torrent-files-table';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,

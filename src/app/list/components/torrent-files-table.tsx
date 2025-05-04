@@ -1,4 +1,4 @@
-// app/(deluge)/components/torrent-files-table.tsx
+// app/list/components/torrent-files-list.tsx
 
 import {
   ColumnDef,

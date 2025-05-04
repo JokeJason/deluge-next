@@ -11,12 +11,12 @@ datasource db {
 }
 
 model Password {
-  id        Int      @id @default(autoincrement())
-  password  String
+  id    Int    @id @default(autoincrement())
+  value String
 }
 
 model Session {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
-  session   String   @unique
+  expiresAt DateTime
 }
