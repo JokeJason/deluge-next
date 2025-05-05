@@ -1,4 +1,4 @@
-import { removeTorrent } from '@/app/actions/remove-torrent';
+import { removeTorrent } from '@/app/list/actions/remove-torrent';
 import {
   AlertDialog,
   AlertDialogAction,

@@ -5,11 +5,11 @@ import {
   queueDown,
   queueTop,
   queueUp,
-} from '@/app/actions/change-torrent-queue';
+} from '@/app/list/actions/change-torrent-queue';
 import {
   pauseTorrent,
   resumeTorrent,
-} from '@/app/actions/change-torrent-state';
+} from '@/app/list/actions/change-torrent-state';
 import { LabelDialog } from '@/app/list/components/label-dialog';
 import { RemoveDialog } from '@/app/list/components/remove-dialog';
 import { Button } from '@/components/ui/button';

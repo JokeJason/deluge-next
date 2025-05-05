@@ -1,8 +1,8 @@
 // app/list/components/add-torrent-dialog.tsx
 'use client';
 
-import { addTorrent } from '@/app/actions/add-torrent';
-import { uploadTorrent } from '@/app/actions/upload-torrent';
+import { addTorrent } from '@/app/list/actions/add-torrent';
+import { uploadTorrent } from '@/app/list/actions/upload-torrent';
 import { TorrentFilesColumns } from '@/app/list/components/torrent-files-columns';
 import { TorrentFilesTable } from '@/app/list/components/torrent-files-table';
 import { Button } from '@/components/ui/button';
