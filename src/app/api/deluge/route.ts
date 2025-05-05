@@ -1,5 +1,7 @@
+import { validateSession } from '@/app/actions/auth';
 import { Deluge } from '@ctrl/deluge';
 import { NextRequest, NextResponse } from 'next/server';
+import 'server-only';
 import { z } from 'zod';
 
 const deluge = new Deluge({
@@ -17,6 +19,14 @@ const addTorrentSchema = z.object({
 });
 
 export async function GET() {
+  const { authenticated } = await validateSession();
+  if (!authenticated) {
+    return NextResponse.json(
+      { success: false, error: 'Unauthorized' },
+      { status: 401 },
+    );
+  }
+
   try {
     // Ensure authenticated session and fetch all torrent data
     const data = await deluge.getAllData();
@@ -31,6 +41,14 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
+  const { authenticated } = await validateSession();
+  if (!authenticated) {
+    return NextResponse.json(
+      { success: false, error: 'Unauthorized' },
+      { status: 401 },
+    );
+  }
+
   try {
     // Parse and validate request body
     const json = await request.json();

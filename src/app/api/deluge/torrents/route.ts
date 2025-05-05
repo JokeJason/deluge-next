@@ -1,5 +1,7 @@
+import { validateSession } from '@/app/actions/auth';
 import { Deluge } from '@ctrl/deluge';
 import { NextRequest, NextResponse } from 'next/server';
+import 'server-only';
 
 const deluge = new Deluge({
   baseUrl: process.env.DELUGE_URL,
@@ -10,6 +12,14 @@ const deluge = new Deluge({
 });
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
+  const { authenticated } = await validateSession();
+  if (!authenticated) {
+    return NextResponse.json(
+      { success: false, error: 'Unauthorized' },
+      { status: 401 },
+    );
+  }
+
   const url = new URL(request.url);
   const filter: Record<string, string> = {};
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { signout } from '@/app/actions/auth';
+import { signOut } from '@/app/actions/auth';
 import { Button } from '@/components/ui/button';
 import 'client-only';
 import { Loader2 } from 'lucide-react';
@@ -12,7 +12,7 @@ export default function SignOutButton() {
   const handleSignOut = async () => {
     setIsSigningOut(true);
 
-    await signout();
+    await signOut();
   };
 
   return isSigningOut ? (

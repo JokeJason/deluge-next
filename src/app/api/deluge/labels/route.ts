@@ -1,5 +1,7 @@
+import { validateSession } from '@/app/actions/auth';
 import { Deluge } from '@ctrl/deluge';
 import { NextResponse } from 'next/server';
+import 'server-only';
 
 const deluge = new Deluge({
   baseUrl: process.env.DELUGE_URL,
@@ -10,6 +12,14 @@ const deluge = new Deluge({
 });
 
 export async function GET() {
+  const { authenticated } = await validateSession();
+  if (!authenticated) {
+    return NextResponse.json(
+      { success: false, error: 'Unauthorized' },
+      { status: 401 },
+    );
+  }
+
   try {
     // Ensure authenticated session and fetch all torrent data
     const data = await deluge.getLabels();
