@@ -4,8 +4,8 @@ import 'server-only';
 
 import { prisma } from '@/lib/db';
 import { LoginSchema, LoginState } from '@/lib/definitions';
+import { updateDelugePassword } from '@/lib/deluge-client';
 import { createSession, decrypt, deleteSession } from '@/lib/session';
-import { Deluge } from '@ctrl/deluge';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
@@ -62,7 +62,6 @@ export async function login(
     }
 
     const { password } = parsed.data;
-
     const existingPassword = await getPassword();
 
     // Case 1: Password exists in DB
@@ -77,15 +76,8 @@ export async function login(
     }
     // Case 2: Password does not exist in DB, verify with Deluge
     else {
-      const deluge = new Deluge({
-        baseUrl: process.env.DELUGE_URL,
-        password: password,
-        timeout: process.env.DELUGE_TIMEOUT
-          ? Number(process.env.DELUGE_TIMEOUT)
-          : undefined,
-      });
-      const loginSuccess = await deluge.login();
-      if (!loginSuccess) {
+      const success = await updateDelugePassword(password);
+      if (!success) {
         return {
           errors: {
             password: ['Invalid password. Please try again.'],
@@ -107,7 +99,6 @@ export async function login(
   }
 
   await createSession();
-
   redirect('/');
 }
 

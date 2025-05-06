@@ -2,6 +2,7 @@ import { Deluge } from '@ctrl/deluge';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 
+// TODO: remove this when server action is done
 const deluge = new Deluge({
   baseUrl: process.env.DELUGE_URL,
   password: process.env.DELUGE_PASSWORD,

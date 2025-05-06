@@ -1,15 +1,7 @@
 import { validateSession } from '@/app/actions/auth';
-import { Deluge } from '@ctrl/deluge';
+import { getDelugeClient } from '@/lib/deluge-client';
 import { NextRequest, NextResponse } from 'next/server';
 import 'server-only';
-
-const deluge = new Deluge({
-  baseUrl: process.env.DELUGE_URL,
-  password: process.env.DELUGE_PASSWORD,
-  timeout: process.env.DELUGE_TIMEOUT
-    ? Number(process.env.DELUGE_TIMEOUT)
-    : undefined,
-});
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
   const { authenticated } = await validateSession();
@@ -17,6 +9,14 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json(
       { success: false, error: 'Unauthorized' },
       { status: 401 },
+    );
+  }
+
+  const deluge = await getDelugeClient();
+  if (!deluge) {
+    return NextResponse.json(
+      { success: false, error: 'Deluge client not initialized' },
+      { status: 500 },
     );
   }
 

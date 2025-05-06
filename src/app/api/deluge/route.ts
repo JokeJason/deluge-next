@@ -1,16 +1,8 @@
 import { validateSession } from '@/app/actions/auth';
-import { Deluge } from '@ctrl/deluge';
+import { getDelugeClient } from '@/lib/deluge-client';
 import { NextRequest, NextResponse } from 'next/server';
 import 'server-only';
 import { z } from 'zod';
-
-const deluge = new Deluge({
-  baseUrl: process.env.DELUGE_URL,
-  password: process.env.DELUGE_PASSWORD,
-  timeout: process.env.DELUGE_TIMEOUT
-    ? Number(process.env.DELUGE_TIMEOUT)
-    : undefined,
-});
 
 // Zod schema for POST body validation
 const addTorrentSchema = z.object({
@@ -19,6 +11,14 @@ const addTorrentSchema = z.object({
 });
 
 export async function GET() {
+  const deluge = await getDelugeClient();
+  if (!deluge) {
+    return NextResponse.json(
+      { success: false, error: 'Deluge client not available' },
+      { status: 500 },
+    );
+  }
+
   const { authenticated } = await validateSession();
   if (!authenticated) {
     return NextResponse.json(
@@ -41,6 +41,14 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
+  const deluge = await getDelugeClient();
+  if (!deluge) {
+    return NextResponse.json(
+      { success: false, error: 'Deluge client not available' },
+      { status: 500 },
+    );
+  }
+
   const { authenticated } = await validateSession();
   if (!authenticated) {
     return NextResponse.json(

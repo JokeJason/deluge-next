@@ -1,20 +1,18 @@
 // app/actions/upload-torrent.ts
-
 'use server';
-import { Deluge, TorrentInfo } from '@ctrl/deluge';
-import 'server-only';
 
-const deluge = new Deluge({
-  baseUrl: process.env.DELUGE_URL,
-  password: process.env.DELUGE_PASSWORD,
-  timeout: process.env.DELUGE_TIMEOUT
-    ? Number(process.env.DELUGE_TIMEOUT)
-    : undefined,
-});
+import { getDelugeClient } from '@/lib/deluge-client';
+import { TorrentInfo } from '@ctrl/deluge';
+import 'server-only';
 
 export async function uploadTorrent(
   formData: FormData,
 ): Promise<{ tmpPath: string; torrentInfo: TorrentInfo }> {
+  const deluge = await getDelugeClient();
+  if (!deluge) {
+    throw new Error('Deluge client not available');
+  }
+
   const file = formData.get('torrentFile');
   if (!(file instanceof File)) throw new Error('No torrent file');
 

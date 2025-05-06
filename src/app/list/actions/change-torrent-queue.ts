@@ -1,18 +1,17 @@
 'use server';
-import { DefaultResponse, Deluge } from '@ctrl/deluge';
-import 'server-only';
 
-const deluge = new Deluge({
-  baseUrl: process.env.DELUGE_URL,
-  password: process.env.DELUGE_PASSWORD,
-  timeout: process.env.DELUGE_TIMEOUT
-    ? Number(process.env.DELUGE_TIMEOUT)
-    : undefined,
-});
+import { getDelugeClient } from '@/lib/deluge-client';
+import { DefaultResponse } from '@ctrl/deluge';
+import 'server-only';
 
 export async function queueTop(
   torrentId: string,
 ): Promise<{ response: DefaultResponse }> {
+  const deluge = await getDelugeClient();
+  if (!deluge) {
+    throw new Error('Deluge client not available');
+  }
+
   const response = await deluge.queueTop(torrentId);
 
   return { response: response };
@@ -21,6 +20,11 @@ export async function queueTop(
 export async function queueUp(
   torrentId: string,
 ): Promise<{ response: DefaultResponse }> {
+  const deluge = await getDelugeClient();
+  if (!deluge) {
+    throw new Error('Deluge client not available');
+  }
+
   const response = await deluge.queueUp(torrentId);
 
   return { response: response };
@@ -29,6 +33,11 @@ export async function queueUp(
 export async function queueDown(
   torrentId: string,
 ): Promise<{ response: DefaultResponse }> {
+  const deluge = await getDelugeClient();
+  if (!deluge) {
+    throw new Error('Deluge client not available');
+  }
+
   const response = await deluge.queueDown(torrentId);
 
   return { response: response };
@@ -37,6 +46,11 @@ export async function queueDown(
 export async function queueBottom(
   torrentId: string,
 ): Promise<{ response: DefaultResponse }> {
+  const deluge = await getDelugeClient();
+  if (!deluge) {
+    throw new Error('Deluge client not available');
+  }
+
   const response = await deluge.queueBottom(torrentId);
 
   return { response: response };

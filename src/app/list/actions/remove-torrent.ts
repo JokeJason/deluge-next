@@ -1,19 +1,17 @@
 'use server';
-import { Deluge } from '@ctrl/deluge';
-import 'server-only';
 
-const deluge = new Deluge({
-  baseUrl: process.env.DELUGE_URL,
-  password: process.env.DELUGE_PASSWORD,
-  timeout: process.env.DELUGE_TIMEOUT
-    ? Number(process.env.DELUGE_TIMEOUT)
-    : undefined,
-});
+import { getDelugeClient } from '@/lib/deluge-client';
+import 'server-only';
 
 export async function removeTorrent(
   torrentId: string,
   removeData: boolean,
 ): Promise<{ response: boolean }> {
+  const deluge = await getDelugeClient();
+  if (!deluge) {
+    throw new Error('Deluge client not available');
+  }
+
   const response = await deluge.removeTorrent(torrentId, removeData);
 
   return { response: response.result.valueOf() };

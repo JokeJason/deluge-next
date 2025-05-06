@@ -72,13 +72,15 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export function AddTorrentDialog() {
+  // --- Hooks & State Management ---
   const queryClient = useQueryClient();
 
+  // --- torrent file upload ---
   const [selectedIndices, setSelectedIndices] = useState<number[]>([]);
-
   const [tmpPath, setTmpPath] = useState<string | null>(null);
   const [torrentInfo, setTorrentInfo] = useState<TorrentInfo | null>(null);
 
+  // --- torrent file upload form ---
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -86,6 +88,7 @@ export function AddTorrentDialog() {
     },
   });
 
+  // --- Event Handlers ---
   const onPreview = async (data: FormValues) => {
     const file = data.torrentFile[0];
     const formData = new FormData();
@@ -107,10 +110,11 @@ export function AddTorrentDialog() {
     );
 
     if (result) {
-      queryClient.invalidateQueries({ queryKey: ['allData'] });
+      await queryClient.invalidateQueries({ queryKey: ['allData'] });
     }
   };
 
+  // --- Render ---
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -118,7 +122,7 @@ export function AddTorrentDialog() {
           Add Torrent
         </Button>
       </DialogTrigger>
-      <DialogContent className={'max-w-4xl'}>
+      <DialogContent className={'max-w-5xl'}>
         <DialogHeader>
           <DialogTitle>Upload a Torrent</DialogTitle>
           <DialogDescription>

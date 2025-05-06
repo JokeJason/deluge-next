@@ -1,15 +1,6 @@
 // app/list/components/torrent-files-list.tsx
 
-import {
-  ColumnDef,
-  flexRender,
-  getCoreRowModel,
-  getSortedRowModel,
-  SortingState,
-  useReactTable,
-} from '@tanstack/react-table';
-import { useEffect, useState } from 'react';
-
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import {
   Table,
   TableBody,
@@ -20,6 +11,15 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { TorrentContentFile } from '@ctrl/deluge';
+import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  getSortedRowModel,
+  SortingState,
+  useReactTable,
+} from '@tanstack/react-table';
+import { useEffect, useState } from 'react';
 
 interface TorrentFilesTableProps {
   columns: ColumnDef<TorrentContentFile>[];
@@ -51,7 +51,7 @@ export function TorrentFilesTable({
   useEffect(() => {
     const selectedIndices = getSelectedFileIndices(rowSelection, data);
     setSelectedIndices(selectedIndices);
-  }, [rowSelection, setSelectedIndices, data]);
+  }, [rowSelection]);
 
   const table = useReactTable({
     data,
@@ -66,67 +66,59 @@ export function TorrentFilesTable({
     },
   });
 
-  const selectedCount = calculateRowSelection(rowSelection);
-
   return (
-    <div className={'w-full'}>
-      <div className={'rounded-md border'}>
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                    </TableHead>
-                  );
-                })}
+    <ScrollArea className={'h-[60vh] w-full rounded-md border'}>
+      <Table>
+        <TableHeader>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map((header) => {
+                return (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
+                  </TableHead>
+                );
+              })}
+            </TableRow>
+          ))}
+        </TableHeader>
+        <TableBody>
+          {table.getRowModel().rows?.length ? (
+            table.getRowModel().rows.map((row) => (
+              <TableRow
+                key={row.id}
+                data-state={row.getIsSelected() && 'selected'}
+              >
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
               </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className='h-24 text-center'
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-          <TableFooter>
+            ))
+          ) : (
             <TableRow>
-              <TableCell colSpan={columns.length} className='text-right'>
-                Selected {selectedCount} of {data.length} files
+              <TableCell colSpan={columns.length} className='h-24 text-center'>
+                No results.
               </TableCell>
             </TableRow>
-          </TableFooter>
-        </Table>
-      </div>
-    </div>
+          )}
+        </TableBody>
+        <TableFooter>
+          <TableRow>
+            <TableCell colSpan={columns.length} className='text-right'>
+              Selected {calculateRowSelection(rowSelection)} of {data.length}{' '}
+              files
+            </TableCell>
+          </TableRow>
+        </TableFooter>
+      </Table>
+      <ScrollBar orientation={'horizontal'} />
+    </ScrollArea>
   );
 }
