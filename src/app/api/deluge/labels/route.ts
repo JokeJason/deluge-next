@@ -1,4 +1,5 @@
 import { validateSession } from '@/app/actions/auth';
+import { getDelugeClient } from '@/lib/deluge-client';
 import { Deluge } from '@ctrl/deluge';
 import { NextResponse } from 'next/server';
 import 'server-only';
@@ -17,6 +18,14 @@ export async function GET() {
     return NextResponse.json(
       { success: false, error: 'Unauthorized' },
       { status: 401 },
+    );
+  }
+
+  const deluge = await getDelugeClient();
+  if (!deluge) {
+    return NextResponse.json(
+      { success: false, error: 'Deluge client not available' },
+      { status: 500 },
     );
   }
 

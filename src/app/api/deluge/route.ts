@@ -11,19 +11,19 @@ const addTorrentSchema = z.object({
 });
 
 export async function GET() {
-  const deluge = await getDelugeClient();
-  if (!deluge) {
-    return NextResponse.json(
-      { success: false, error: 'Deluge client not available' },
-      { status: 500 },
-    );
-  }
-
   const { authenticated } = await validateSession();
   if (!authenticated) {
     return NextResponse.json(
       { success: false, error: 'Unauthorized' },
       { status: 401 },
+    );
+  }
+
+  const deluge = await getDelugeClient();
+  if (!deluge) {
+    return NextResponse.json(
+      { success: false, error: 'Deluge client not available' },
+      { status: 500 },
     );
   }
 

@@ -1,20 +1,20 @@
-import { Deluge } from '@ctrl/deluge';
+import { getDelugeClient } from '@/lib/deluge-client';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-
-const deluge = new Deluge({
-  baseUrl: process.env.DELUGE_URL,
-  password: process.env.DELUGE_PASSWORD,
-  timeout: process.env.DELUGE_TIMEOUT
-    ? Number(process.env.DELUGE_TIMEOUT)
-    : undefined,
-});
 
 const getHostSchema = z.object({
   host: z.string().min(1, 'Host ID is required'),
 });
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
+  const deluge = await getDelugeClient();
+  if (!deluge) {
+    return NextResponse.json(
+      { success: false, error: 'Deluge client not available' },
+      { status: 500 },
+    );
+  }
+
   const url = new URL(request.url);
   const hostParam = url.searchParams.get('host');
 

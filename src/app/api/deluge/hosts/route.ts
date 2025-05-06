@@ -1,15 +1,16 @@
-import { Deluge } from '@ctrl/deluge';
+import { getDelugeClient } from '@/lib/deluge-client';
 import { NextResponse } from 'next/server';
-
-const deluge = new Deluge({
-  baseUrl: process.env.DELUGE_URL,
-  password: process.env.DELUGE_PASSWORD,
-  timeout: process.env.DELUGE_TIMEOUT
-    ? Number(process.env.DELUGE_TIMEOUT)
-    : undefined,
-});
+import 'server-only';
 
 export async function GET() {
+  const deluge = await getDelugeClient();
+  if (!deluge) {
+    return NextResponse.json(
+      { success: false, error: 'Deluge client not available' },
+      { status: 500 },
+    );
+  }
+
   try {
     // Ensure authenticated session and fetch all torrent data
     const data = await deluge.getHosts();
