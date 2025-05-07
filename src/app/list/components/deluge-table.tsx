@@ -139,28 +139,6 @@ export function DelugeTable({ columns, data, labels }: DelugeTableProps) {
               ))}
             </SelectContent>
           </Select>
-          <Select
-            value={
-              (table.getColumn('savePath')?.getFilterValue() as string) ?? 'all'
-            }
-            onValueChange={(val) =>
-              table
-                .getColumn('savePath')
-                ?.setFilterValue(val === 'all' ? undefined : val)
-            }
-          >
-            <SelectTrigger className='w-48'>
-              <SelectValue placeholder='Filter by path' />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value='all'>All Paths</SelectItem>
-              {pathOptions.map((path) => (
-                <SelectItem key={path} value={path}>
-                  {path}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>{' '}
           <Tooltip>
             <TooltipTrigger asChild>
               <div className={'pt-1.5'}>
