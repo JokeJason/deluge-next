@@ -24,7 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useLabels } from '@/hooks/queries/useLabels';
+import { useDelugeLabels } from '@/hooks/queries/useDelugeLabels';
 import { NormalizedTorrent } from '@ctrl/shared-torrent';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQueryClient } from '@tanstack/react-query';
@@ -48,7 +48,7 @@ export function LabelDialog({
 }: LabelDialogProps) {
   const queryClient = useQueryClient();
 
-  const { data: labels } = useLabels();
+  const { data: labels } = useDelugeLabels();
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),

@@ -3,8 +3,8 @@
 
 import { DelugeColumns } from '@/app/list/components/deluge-columns';
 import { DelugeTable } from '@/app/list/components/deluge-table';
-import { useAllData } from '@/hooks/queries/useAllData';
-import { useTorrents } from '@/hooks/queries/useTorrents';
+import { useDelugeAllData } from '@/hooks/queries/useDelugeAllData';
+import { useDelugeTorrents } from '@/hooks/queries/useDelugeTorrents';
 import { useCountStore } from '@/lib/store';
 import { NormalizedTorrent, TorrentState } from '@ctrl/shared-torrent';
 import { useEffect, useState } from 'react';
@@ -17,7 +17,7 @@ export default function DelugePage({ baseUrl }: DelugePageProps) {
   const { setDelugeNextBaseUrl } = useCountStore((state) => state);
   const [activeIds, setActiveIds] = useState<string[]>([]);
 
-  const { data: allData, isLoading, isError, error } = useAllData();
+  const { data: allData, isLoading, isError, error } = useDelugeAllData();
 
   useEffect(() => {
     if (!baseUrl) return;
@@ -37,7 +37,7 @@ export default function DelugePage({ baseUrl }: DelugePageProps) {
     setActiveIds(activeIds);
   }, [allData]);
 
-  const activeQueries = useTorrents(activeIds);
+  const activeQueries = useDelugeTorrents(activeIds);
 
   // extract successful poll results
   const updates = activeQueries

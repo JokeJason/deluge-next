@@ -3,7 +3,7 @@
 import { fetchTorrent } from '@/queries/deluge';
 import { useQueries } from '@tanstack/react-query';
 
-export function useTorrents(torrentIds: string[]) {
+export function useDelugeTorrents(torrentIds: string[]) {
   return useQueries({
     queries: torrentIds.map((id) => ({
       queryKey: ['torrent', id],

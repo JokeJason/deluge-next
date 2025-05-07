@@ -3,7 +3,7 @@
 import { fetchLabels } from '@/queries/deluge';
 import { useQuery } from '@tanstack/react-query';
 
-export function useLabels() {
+export function useDelugeLabels() {
   return useQuery({
     queryKey: ['labels'],
     queryFn: fetchLabels,

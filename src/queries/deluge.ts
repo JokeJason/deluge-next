@@ -2,6 +2,12 @@ import { api } from '@/lib/api';
 import { DefaultResponse } from '@ctrl/deluge';
 import { AllClientData, NormalizedTorrent } from '@ctrl/shared-torrent';
 
+export async function fetchStates(): Promise<[string, number][]> {
+  const { data } = await api.get('/states');
+  if (!data.success) throw new Error(data.error);
+  return data.data as [string, number][];
+}
+
 export async function fetchAllData(): Promise<AllClientData> {
   const { data } = await api.get('/'); // GET /api/deluge
   if (!data.success) throw new Error(data.error);
