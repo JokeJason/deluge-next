@@ -1,5 +1,6 @@
 'use client';
 
+import { updateTorrentLabel } from '@/app/list/actions/update-torrent-label';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -23,10 +24,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useUpdateTorrentLabel } from '@/hooks/mutations/useUpdateTorrentLabel';
 import { useLabels } from '@/hooks/queries/useLabels';
 import { NormalizedTorrent } from '@ctrl/shared-torrent';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -45,15 +46,20 @@ export function LabelDialog({
   setLabelDialogOpen,
   torrent,
 }: LabelDialogProps) {
+  const queryClient = useQueryClient();
+
   const { data: labels } = useLabels();
-  const mutation = useUpdateTorrentLabel();
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    mutation.mutate({ torrentId: torrent.id, label: data.label });
+  async function onSubmit(data: z.infer<typeof FormSchema>) {
+    const result = await updateTorrentLabel(torrent.id, data.label);
+    if (result.result) {
+      await queryClient.invalidateQueries({ queryKey: ['allData'] });
+      setLabelDialogOpen(false);
+    }
   }
 
   return (

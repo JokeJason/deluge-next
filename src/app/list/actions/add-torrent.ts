@@ -1,6 +1,7 @@
 // app/actions/add-torrent.ts
-
 'use server';
+
+import { getDelugeClient } from '@/lib/deluge-client';
 import { AddTorrentResponse, Deluge, TorrentContentFile } from '@ctrl/deluge';
 import 'server-only';
 
@@ -17,6 +18,11 @@ export async function addTorrent(
   torrentContentFiles: TorrentContentFile[],
   selectedIndices: number[],
 ): Promise<{ result: AddTorrentResponse }> {
+  const deluge = await getDelugeClient();
+  if (!deluge) {
+    throw new Error('Deluge client not available');
+  }
+
   const count = torrentContentFiles.length;
 
   const file_priorities = Array<number>(count).fill(0);

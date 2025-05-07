@@ -1,18 +1,7 @@
 // app/list/components/deluge-list.tsx
 'use client';
 
-import {
-  ColumnDef,
-  SortingState,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from '@tanstack/react-table';
-import { useState } from 'react';
-
+import { AddTorrentDialog } from '@/app/list/components/add-torrent-dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -30,8 +19,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-
-import { AddTorrentDialog } from '@/app/list/components/add-torrent-dialog';
 import {
   Tooltip,
   TooltipContent,
@@ -39,7 +26,18 @@ import {
 } from '@/components/ui/tooltip';
 import { Label, NormalizedTorrent, TorrentState } from '@ctrl/shared-torrent';
 import { useQueryClient } from '@tanstack/react-query';
+import {
+  ColumnDef,
+  SortingState,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
 import { ArrowUpDown, RefreshCw } from 'lucide-react';
+import { useState } from 'react';
 
 interface DelugeTableProps {
   columns: ColumnDef<NormalizedTorrent>[];
