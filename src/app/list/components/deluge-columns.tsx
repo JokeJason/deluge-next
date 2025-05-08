@@ -8,7 +8,8 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { NormalizedTorrent, TorrentState } from '@ctrl/shared-torrent';
+import { TorrentTableRowEntity } from '@/types';
+import { TorrentState } from '@ctrl/shared-torrent';
 import { ColumnDef } from '@tanstack/react-table';
 import byteSize from 'byte-size';
 import { Circle } from 'lucide-react';
@@ -32,7 +33,7 @@ const formatETA = (secs: number) => {
   return [h && `${h}h`, m && `${m}m`, `${s}s`].filter(Boolean).join(' ');
 };
 
-export const DelugeColumns: ColumnDef<NormalizedTorrent>[] = [
+export const DelugeColumns: ColumnDef<TorrentTableRowEntity>[] = [
   {
     id: 'state',
     accessorKey: 'state', // assumes your DelugeTorrent has a `state: string` field

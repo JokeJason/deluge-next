@@ -25,7 +25,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useDelugeLabels } from '@/hooks/queries/useDelugeLabels';
-import { NormalizedTorrent } from '@ctrl/shared-torrent';
+import { TorrentTableRowEntity } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
@@ -38,7 +38,7 @@ const FormSchema = z.object({
 export interface LabelDialogProps {
   isLabelDialogOpen: boolean;
   setLabelDialogOpen: (open: boolean) => void;
-  torrent: NormalizedTorrent;
+  torrent: TorrentTableRowEntity;
 }
 
 export function LabelDialog({
