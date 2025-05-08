@@ -24,7 +24,8 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { Label, NormalizedTorrent, TorrentState } from '@ctrl/shared-torrent';
+import { TorrentTableRowEntity } from '@/types';
+import { Label, TorrentState } from '@ctrl/shared-torrent';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   ColumnDef,
@@ -40,8 +41,8 @@ import { ArrowUpDown, RefreshCw } from 'lucide-react';
 import { useState } from 'react';
 
 interface DelugeTableProps {
-  columns: ColumnDef<NormalizedTorrent>[];
-  data: NormalizedTorrent[];
+  columns: ColumnDef<TorrentTableRowEntity>[];
+  data: TorrentTableRowEntity[];
   labels: Label[];
 }
 
