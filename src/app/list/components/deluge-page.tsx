@@ -3,7 +3,6 @@
 
 import { DelugeColumns } from '@/app/list/components/deluge-columns';
 import { DelugeTable } from '@/app/list/components/deluge-table';
-import { useDelugeAllData } from '@/hooks/queries/useDelugeAllData';
 import { useDelugeAllTorrents } from '@/hooks/queries/useDelugeAllTorrents';
 import { useDelugeBatchTorrents } from '@/hooks/queries/useDelugeBatchTorrents';
 import { useDelugeLabels } from '@/hooks/queries/useDelugeLabels';
@@ -20,11 +19,13 @@ export default function DelugePage({ baseUrl }: DelugePageProps) {
   const { setDelugeNextBaseUrl } = useDelugeListStore((state) => state);
   const [activeIds, setActiveIds] = useState<string[]>([]);
 
-  const { data: allData, isLoading, isError, error } = useDelugeAllData();
   const { data: allStates, isLoading: allStatesLoading } = useDelugeStates();
   const { data: allLabels, isLoading: allLabelsLoading } = useDelugeLabels();
-  const { data: allTorrents, isLoading: allTorrentsLoading } =
-    useDelugeAllTorrents();
+  const {
+    data: allTorrents,
+    isLoading: allTorrentsLoading,
+    error: allTorrentsError,
+  } = useDelugeAllTorrents();
 
   useEffect(() => {
     if (!baseUrl) return;
@@ -34,9 +35,9 @@ export default function DelugePage({ baseUrl }: DelugePageProps) {
   }, []);
 
   useEffect(() => {
-    if (!allData) return;
+    if (!allTorrents) return;
 
-    const active = allData.torrents.filter(
+    const active = allTorrents.filter(
       (torrent) =>
         torrent.state === TorrentState.downloading ||
         torrent.state === TorrentState.seeding,
@@ -44,7 +45,7 @@ export default function DelugePage({ baseUrl }: DelugePageProps) {
 
     const activeIds = active.map((torrent) => torrent.id);
     setActiveIds(activeIds);
-  }, [allData]);
+  }, [allTorrents]);
 
   const activeQueries = useDelugeBatchTorrents(activeIds);
 
@@ -59,23 +60,19 @@ export default function DelugePage({ baseUrl }: DelugePageProps) {
   );
 
   // merge: if we have an update, use it; otherwise fall back to the original
-  const merged = allData
-    ? allData.torrents.map((t) =>
-        updateMap.has(t.id) ? updateMap.get(t.id)! : t,
-      )
+  const merged = allTorrents
+    ? allTorrents.map((t) => (updateMap.has(t.id) ? updateMap.get(t.id)! : t))
     : [];
 
   // TODO: get speed and progress from the torrent status endpoint to merge, so avoid getting entire torrent data
 
   return (
     <div className='container mx-auto py-8'>
-      {isLoading && <p>Loading...</p>}
-      {isError && (
-        <p className='text-red-500'>
-          Error: {error instanceof Error ? error.message : 'Unknown error'}
-        </p>
+      {allTorrentsLoading && <p>Loading...</p>}
+      {allTorrentsError && (
+        <p className='text-red-500'>Error: {allTorrentsError.message}</p>
       )}
-      {allData && allLabels && allStates && (
+      {allTorrents && allLabels && allStates && (
         <DelugeTable columns={DelugeColumns} data={merged} />
       )}
     </div>
