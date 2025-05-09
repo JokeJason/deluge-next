@@ -33,7 +33,7 @@ export default function DelugePage({ baseUrl }: DelugePageProps) {
   useEffect(() => {
     if (!allTorrents) return;
 
-    const active = allTorrents.filter(
+    const active = Object.values(allTorrents).filter(
       (torrent) =>
         torrent.state === TorrentState.downloading ||
         torrent.state === TorrentState.seeding,
@@ -57,7 +57,9 @@ export default function DelugePage({ baseUrl }: DelugePageProps) {
 
   // merge: if we have an update, use it; otherwise fall back to the original
   const merged = allTorrents
-    ? allTorrents.map((t) => (updateMap.has(t.id) ? updateMap.get(t.id)! : t))
+    ? Object.values(allTorrents).map((t) =>
+        updateMap.has(t.id) ? updateMap.get(t.id)! : t,
+      )
     : [];
 
   // TODO: get speed and progress from the torrent status endpoint to merge, so avoid getting entire torrent data

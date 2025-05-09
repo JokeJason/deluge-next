@@ -1,6 +1,10 @@
 import { getDelugeClient } from '@/lib/deluge-client';
 import { normalizeTorrentTableData } from '@/lib/normalize-torrent-table-data';
-import { DelugeRpcResponse } from '@/types';
+import {
+  ApiResponse,
+  DelugeRpcResponse,
+  NormalizedTorrentForTable,
+} from '@/types';
 import { Torrent } from '@ctrl/deluge';
 import { NextResponse } from 'next/server';
 import 'server-only';
@@ -11,7 +15,9 @@ type DelugeTorrentStatusRpcResponse = DelugeRpcResponse<
 
 type DelugeSessionRpcResponse = DelugeRpcResponse<string[]>;
 
-export async function GET(): Promise<NextResponse> {
+export async function GET(): Promise<
+  NextResponse<ApiResponse<Record<string, NormalizedTorrentForTable>>>
+> {
   const deluge = await getDelugeClient();
   if (!deluge) {
     return NextResponse.json(
@@ -65,13 +71,12 @@ export async function GET(): Promise<NextResponse> {
     }
 
     // use normalizeTorrentData to convert the torrents array into an array of objects
-    const normalizedTorrents = [];
+    const normalizedTorrents: Record<string, NormalizedTorrentForTable> = {};
     for (const key in torrents) {
-      const normalizedTorrent = normalizeTorrentTableData(key, torrents[key]);
-      normalizedTorrents.push(normalizedTorrent);
+      normalizedTorrents[key] = normalizeTorrentTableData(key, torrents[key]);
     }
 
-    return NextResponse.json({ success: true, torrents: normalizedTorrents });
+    return NextResponse.json({ success: true, data: normalizedTorrents });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : String(error);
     return NextResponse.json(

@@ -16,9 +16,20 @@ export type NormalizedTorrentForTable = Pick<
   | 'savePath'
 >;
 
+export type TorrentSpeedForTable = Pick<
+  NormalizedTorrent,
+  'progress' | 'downloadSpeed' | 'uploadSpeed' | 'eta'
+>;
+
 export type DelugeRpcResponse<T> = {
   _data: {
     result: T;
     error?: string;
   };
+};
+
+export type ApiResponse<T> = {
+  success: boolean;
+  data?: T;
+  error?: string;
 };

@@ -1,5 +1,5 @@
 import { api } from '@/lib/api';
-import { NormalizedTorrentForTable } from '@/types';
+import { ApiResponse, NormalizedTorrentForTable } from '@/types';
 import { DefaultResponse } from '@ctrl/deluge';
 import { AllClientData, NormalizedTorrent } from '@ctrl/shared-torrent';
 
@@ -21,10 +21,15 @@ export async function fetchAllData(): Promise<AllClientData> {
   return data.data as AllClientData;
 }
 
-export async function fetchAllTorrents(): Promise<NormalizedTorrentForTable[]> {
-  const { data } = await api.get('/torrents');
+export async function fetchAllTorrents(): Promise<
+  Record<string, NormalizedTorrentForTable> | undefined
+> {
+  const { data } =
+    await api.get<ApiResponse<Record<string, NormalizedTorrentForTable>>>(
+      '/torrents',
+    );
   if (!data.success) throw new Error(data.error);
-  return data.torrents as NormalizedTorrentForTable[];
+  return data.data;
 }
 
 export async function fetchTorrent(id: string): Promise<NormalizedTorrent> {
