@@ -15,3 +15,10 @@ export type NormalizedTorrentForTable = Pick<
   | 'label'
   | 'savePath'
 >;
+
+export type DelugeRpcResponse<T> = {
+  _data: {
+    result: T;
+    error?: string;
+  };
+};

@@ -1,22 +1,15 @@
 import { getDelugeClient } from '@/lib/deluge-client';
 import { normalizeTorrentTableData } from '@/lib/normalize-torrent-table-data';
+import { DelugeRpcResponse } from '@/types';
 import { Torrent } from '@ctrl/deluge';
 import { NextResponse } from 'next/server';
 import 'server-only';
 
-type DelugeTorrentStatusRpcResponse = {
-  _data: {
-    result: Record<string, Torrent>;
-    error?: string;
-  };
-};
+type DelugeTorrentStatusRpcResponse = DelugeRpcResponse<
+  Record<string, Torrent>
+>;
 
-type DelugeSessionRpcResponse = {
-  _data: {
-    result: string[];
-    error?: string;
-  };
-};
+type DelugeSessionRpcResponse = DelugeRpcResponse<string[]>;
 
 export async function GET(): Promise<NextResponse> {
   const deluge = await getDelugeClient();
