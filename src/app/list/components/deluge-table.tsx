@@ -24,7 +24,6 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { useDelugeTorrentsSpeed } from '@/hooks/queries/useDelugeTorrentsSpeed';
 import { NormalizedTorrentForTable } from '@/types';
 import { TorrentState } from '@ctrl/shared-torrent';
 import { useQueryClient } from '@tanstack/react-query';
@@ -40,7 +39,7 @@ import {
 } from '@tanstack/react-table';
 import { pascalCase } from 'change-case';
 import { ArrowUpDown, RefreshCw } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface DelugeTableProps {
   columns: ColumnDef<NormalizedTorrentForTable>[];
@@ -50,80 +49,34 @@ interface DelugeTableProps {
 
 export function DelugeTable({ columns, data, activeIds }: DelugeTableProps) {
   const queryClient = useQueryClient();
-  const { data: activeTorrentsSpeed } = useDelugeTorrentsSpeed(activeIds);
 
-  const [torrentForTable, setTorrentForTable] =
-    useState<Record<string, NormalizedTorrentForTable>>(data);
-  const [stateOptions, setStateOptions] = useState<TorrentState[]>([]);
-  const [labelOptions, setLabelOptions] = useState<string[]>([]);
+  const [torrentForTable, setTorrentForTable] = useState<
+    NormalizedTorrentForTable[]
+  >(Object.values(data));
+
+  const stateOptionsSet: Set<TorrentState> = new Set<TorrentState>();
+  const labelOptionsSet: Set<string> = new Set<string>();
+  for (const torrent of Object.values(data)) {
+    stateOptionsSet.add(torrent.state);
+    if (torrent.label !== undefined) {
+      labelOptionsSet.add(torrent.label);
+    }
+  }
+  const stateOptions = Array.from(stateOptionsSet).sort();
+  const labelOptions = Array.from(labelOptionsSet).sort();
 
   // 1) Set up state for sorting
   const [sorting, setSorting] = useState<SortingState>([]);
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 20 });
 
-  // Memoize the merged torrents data
-  const mergedTorrents = useMemo(() => {
-    const updatedTorrents = { ...data };
-
-    if (activeTorrentsSpeed) {
-      Object.entries(activeTorrentsSpeed).forEach(([torrentId, speedData]) => {
-        if (updatedTorrents[torrentId]) {
-          updatedTorrents[torrentId] = {
-            ...updatedTorrents[torrentId],
-            progress: speedData.progress,
-            downloadSpeed: speedData.downloadSpeed,
-            uploadSpeed: speedData.uploadSpeed,
-            eta: speedData.eta,
-          };
-        }
-      });
-    }
-
-    return updatedTorrents;
-  }, [data, activeTorrentsSpeed]);
-
-  // Memoize filter options calculations
-  const { stateOptionsArray, labelOptionsArray } = useMemo(() => {
-    const torrentData = Object.values(mergedTorrents);
-    const stateOptionsSet: Set<TorrentState> = new Set();
-    const labelOptionsSet: Set<string> = new Set();
-
-    for (const torrent of torrentData) {
-      stateOptionsSet.add(torrent.state);
-      if (torrent.label !== undefined) {
-        labelOptionsSet.add(torrent.label);
-      }
-    }
-
-    return {
-      stateOptionsArray: Array.from(stateOptionsSet.values()),
-      labelOptionsArray: Array.from(labelOptionsSet.values()),
-    };
-  }, [mergedTorrents]);
-
-  // Update states only when memoized values change
   useEffect(() => {
-    setTorrentForTable(mergedTorrents);
-  }, [mergedTorrents]);
-
-  useEffect(() => {
-    setStateOptions(stateOptionsArray);
-    setLabelOptions(labelOptionsArray);
-  }, [stateOptionsArray, labelOptionsArray]);
-
-  // Memoize table data to prevent unnecessary re-renders
-  const tableData = useMemo(
-    () => Object.values(torrentForTable),
-    [torrentForTable],
-  );
-
-  // Memoize columns to prevent unnecessary re-renders
-  const memoizedColumns = useMemo(() => columns, [columns]);
+    setTorrentForTable(Object.values(data));
+  }, [data]);
 
   // 2) configure the list instance
   const table = useReactTable({
-    data: tableData,
-    columns: memoizedColumns,
+    data: torrentForTable,
+    columns: columns,
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -138,11 +91,9 @@ export function DelugeTable({ columns, data, activeIds }: DelugeTableProps) {
 
   return (
     <div>
-      {/* ——— Filter Bar ——— */}
       <div className='flex items-center justify-between py-4'>
         <AddTorrentDialog />
         <div className='flex flex-wrap justify-end gap-4 flex-1'>
-          {/*/!* Name search *!/*/}
           <Input
             placeholder='Search by name...'
             value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
@@ -151,18 +102,17 @@ export function DelugeTable({ columns, data, activeIds }: DelugeTableProps) {
             }
             className='max-w-sm'
           />
-          {/* State dropdown */}
           <Select
             value={
               (table.getColumn('state')?.getFilterValue() as string) ?? 'all'
             }
-            onValueChange={(val) =>
-              table
-                .getColumn('label')
-                ?.setFilterValue(
-                  val === 'all' ? undefined : val === '__NO_LABEL__' ? '' : val,
-                )
-            }
+            onValueChange={(val) => {
+              if (val === 'all') {
+                table.getColumn('state')?.setFilterValue(undefined);
+              } else {
+                table.getColumn('state')?.setFilterValue(val);
+              }
+            }}
           >
             <SelectTrigger className='w-40'>
               <SelectValue placeholder='Filter by state' />
@@ -176,16 +126,23 @@ export function DelugeTable({ columns, data, activeIds }: DelugeTableProps) {
               ))}
             </SelectContent>
           </Select>
-          {/* Label dropdown */}
           <Select
             value={
-              (table.getColumn('label')?.getFilterValue() as string) ?? 'all'
+              table.getColumn('label')?.getFilterValue() === undefined
+                ? 'all'
+                : table.getColumn('label')?.getFilterValue() === ''
+                  ? '__NO_LABEL__'
+                  : (table.getColumn('label')?.getFilterValue() as string)
             }
-            onValueChange={(val) =>
-              table
-                .getColumn('label')
-                ?.setFilterValue(val === 'all' ? undefined : val)
-            }
+            onValueChange={(val) => {
+              if (val === 'all') {
+                table.getColumn('label')?.setFilterValue(undefined);
+              } else if (val === '__NO_LABEL__') {
+                table.getColumn('label')?.setFilterValue('');
+              } else {
+                table.getColumn('label')?.setFilterValue(val);
+              }
+            }}
           >
             <SelectTrigger className='w-40'>
               <SelectValue placeholder='Filter by label' />
@@ -194,7 +151,7 @@ export function DelugeTable({ columns, data, activeIds }: DelugeTableProps) {
               <SelectItem value='all'>All Labels</SelectItem>
               {labelOptions.map((opt) => (
                 <SelectItem
-                  key={opt || 'empty'}
+                  key={opt === '' ? 'empty' : opt}
                   value={opt === '' ? '__NO_LABEL__' : opt}
                 >
                   {opt || 'No Label'}
