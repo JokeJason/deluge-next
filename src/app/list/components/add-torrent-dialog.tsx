@@ -110,7 +110,7 @@ export function AddTorrentDialog() {
     );
 
     if (result) {
-      await queryClient.invalidateQueries({ queryKey: ['allData'] });
+      await queryClient.invalidateQueries({ queryKey: ['allTorrents'] });
     }
   };
 

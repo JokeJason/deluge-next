@@ -208,7 +208,9 @@ export function DelugeTable({ columns, data, activeIds }: DelugeTableProps) {
                 <RefreshCw
                   className={'hover:animate-spin animate-once'}
                   onClick={() => {
-                    queryClient.invalidateQueries({ queryKey: ['allData'] });
+                    queryClient.invalidateQueries({
+                      queryKey: ['allTorrents'],
+                    });
                   }}
                 />
               </div>

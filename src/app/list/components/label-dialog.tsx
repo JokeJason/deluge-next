@@ -57,7 +57,7 @@ export function LabelDialog({
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     const result = await updateTorrentLabel(torrent.id, data.label);
     if (result.result) {
-      await queryClient.invalidateQueries({ queryKey: ['allData'] });
+      await queryClient.invalidateQueries({ queryKey: ['allTorrents'] });
       setLabelDialogOpen(false);
     }
   }
