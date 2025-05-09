@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 
 export function useDelugeLabels() {
   return useQuery({
-    queryKey: ['labels'],
+    queryKey: ['allLabels'],
     queryFn: fetchLabels,
     staleTime: 5 * 60 * 1000,
   });

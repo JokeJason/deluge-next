@@ -8,7 +8,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { TorrentTableRowEntity } from '@/types';
+import { NormalizedTorrentForTable } from '@/types';
 import { TorrentState } from '@ctrl/shared-torrent';
 import { ColumnDef } from '@tanstack/react-table';
 import byteSize from 'byte-size';
@@ -33,7 +33,7 @@ const formatETA = (secs: number) => {
   return [h && `${h}h`, m && `${m}m`, `${s}s`].filter(Boolean).join(' ');
 };
 
-export const DelugeColumns: ColumnDef<TorrentTableRowEntity>[] = [
+export const DelugeColumns: ColumnDef<NormalizedTorrentForTable>[] = [
   {
     id: 'state',
     accessorKey: 'state', // assumes your DelugeTorrent has a `state: string` field
@@ -70,6 +70,7 @@ export const DelugeColumns: ColumnDef<TorrentTableRowEntity>[] = [
     },
   },
   {
+    id: 'queue',
     accessorKey: 'queuePosition',
     header: 'Queue',
     cell: (info) => {
@@ -78,16 +79,19 @@ export const DelugeColumns: ColumnDef<TorrentTableRowEntity>[] = [
     },
   },
   {
+    id: 'name',
     accessorKey: 'name',
     header: 'Name',
     cell: (info) => info.getValue<string>(),
   },
   {
+    id: 'size',
     accessorKey: 'totalSelected',
     header: 'Size',
     cell: (info) => formatBytes(info.getValue<number>()),
   },
   {
+    id: 'progress',
     accessorKey: 'progress',
     header: 'Progress',
     cell: (info) => (
@@ -102,21 +106,25 @@ export const DelugeColumns: ColumnDef<TorrentTableRowEntity>[] = [
     ),
   },
   {
+    id: 'downSpeed',
     accessorKey: 'downloadSpeed',
     header: 'Down Speed',
     cell: (info) => formatSpeed(info.getValue<number>()),
   },
   {
+    id: 'upSpeed',
     accessorKey: 'uploadSpeed',
     header: 'Up Speed',
     cell: (info) => formatSpeed(info.getValue<number>()),
   },
   {
+    id: 'eta',
     accessorKey: 'eta',
     header: 'ETA',
     cell: (info) => formatETA(info.getValue<number>()),
   },
   {
+    id: 'label',
     accessorKey: 'label',
     header: 'Label',
     cell: (info) => info.getValue<string>() ?? '—',
@@ -127,6 +135,7 @@ export const DelugeColumns: ColumnDef<TorrentTableRowEntity>[] = [
     cell: ({ row }) => <ActionCell torrent={row.original} />,
   },
   {
+    id: 'downloadPath',
     accessorKey: 'savePath',
     header: 'Download Path',
     cell: (info) => info.getValue<string>(),

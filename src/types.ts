@@ -1,7 +1,7 @@
 // TorrentTableRowEntity is a type that only pick certain values from NormalizedTorrent
 import { NormalizedTorrent } from '@ctrl/shared-torrent';
 
-export type TorrentTableRowEntity = Pick<
+export type NormalizedTorrentForTable = Pick<
   NormalizedTorrent,
   | 'id'
   | 'state'

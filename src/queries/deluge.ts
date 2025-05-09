@@ -1,11 +1,18 @@
 import { api } from '@/lib/api';
+import { NormalizedTorrentForTable } from '@/types';
 import { DefaultResponse } from '@ctrl/deluge';
 import { AllClientData, NormalizedTorrent } from '@ctrl/shared-torrent';
 
-export async function fetchStates(): Promise<[string, number][]> {
+export async function fetchStates(): Promise<string[]> {
   const { data } = await api.get('/states');
   if (!data.success) throw new Error(data.error);
-  return data.data as [string, number][];
+  return data.states as string[];
+}
+
+export async function fetchLabels(): Promise<string[]> {
+  const { data } = await api.get('/labels');
+  if (!data.success) throw new Error(data.error);
+  return data.labels as string[];
 }
 
 export async function fetchAllData(): Promise<AllClientData> {
@@ -14,39 +21,18 @@ export async function fetchAllData(): Promise<AllClientData> {
   return data.data as AllClientData;
 }
 
+export async function fetchAllTorrents(): Promise<NormalizedTorrentForTable[]> {
+  const { data } = await api.get('/torrents');
+  if (!data.success) throw new Error(data.error);
+  return data.torrents as NormalizedTorrentForTable[];
+}
+
 export async function fetchTorrent(id: string): Promise<NormalizedTorrent> {
   const { data } = await api.get('/torrent', {
     params: { torrentId: id },
   });
   if (!data.success) throw new Error(data.error);
   return data.data as NormalizedTorrent;
-}
-
-export async function fetchLabels(): Promise<string[]> {
-  const { data } = await api.get('/labels');
-  if (!data.success) throw new Error(data.error);
-  return data.data.result as string[];
-}
-
-// update label of a torrent
-export async function updateLabel(
-  torrentId: string,
-  label: string,
-): Promise<NormalizedTorrent> {
-  const { data } = await api.put('/torrent/label', {
-    torrentId,
-    label,
-  });
-  if (!data.success) throw new Error(data.error);
-  return data.data as NormalizedTorrent;
-}
-
-export async function removeTorrent(torrentId: string): Promise<boolean> {
-  const { data } = await api.delete('/torrent', {
-    params: { torrentId },
-  });
-  if (!data.success) throw new Error(data.error);
-  return data.data as boolean;
 }
 
 export async function verifyTorrent(

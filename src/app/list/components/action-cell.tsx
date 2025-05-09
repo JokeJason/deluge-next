@@ -25,7 +25,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useVerifyTorrent } from '@/hooks/mutations/useVerifyTorrent';
-import { TorrentTableRowEntity } from '@/types';
+import { NormalizedTorrentForTable } from '@/types';
 import {
   ArrowDownIcon,
   ArrowDownToLineIcon,
@@ -38,7 +38,11 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 
-export function ActionCell({ torrent }: { torrent: TorrentTableRowEntity }) {
+export function ActionCell({
+  torrent,
+}: {
+  torrent: NormalizedTorrentForTable;
+}) {
   const [isLabelDialogOpen, setLabelDialogOpen] = useState(false);
   const [isRemoveDialogOpen, setRemoveDialogOpen] = useState(false);
   const verifyTorrent = useVerifyTorrent();

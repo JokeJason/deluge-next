@@ -1,12 +1,12 @@
 'use client';
 
-import { fetchAllData } from '@/queries/deluge';
+import { fetchAllTorrents } from '@/queries/deluge';
 import { useQuery } from '@tanstack/react-query';
 
-export function useDelugeAllData() {
+export function useDelugeAllTorrents() {
   return useQuery({
-    queryKey: ['allData'],
-    queryFn: fetchAllData,
+    queryKey: ['allTorrents'],
+    queryFn: fetchAllTorrents,
     refetchInterval: 1000 * 120,
     staleTime: 5 * 60 * 1000,
   });

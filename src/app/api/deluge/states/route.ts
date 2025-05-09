@@ -23,8 +23,10 @@ export async function GET(): Promise<NextResponse> {
     // Ensure authenticated session and fetch all torrent data
     const data = await deluge.listTorrents([], { state: 'state' });
     const states = data.result ? data.result.filters.state : [];
+    // get all strings from the states array
+    const statesArray = states.map((s) => s[0]);
 
-    return NextResponse.json({ success: true, states });
+    return NextResponse.json({ success: true, states: statesArray });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : String(error);
     return NextResponse.json(

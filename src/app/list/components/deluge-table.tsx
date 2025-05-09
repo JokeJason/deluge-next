@@ -24,8 +24,8 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { TorrentTableRowEntity } from '@/types';
-import { Label, TorrentState } from '@ctrl/shared-torrent';
+import { NormalizedTorrentForTable } from '@/types';
+import { TorrentState } from '@ctrl/shared-torrent';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   ColumnDef,
@@ -37,22 +37,38 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
+import { pascalCase } from 'change-case';
 import { ArrowUpDown, RefreshCw } from 'lucide-react';
 import { useState } from 'react';
 
 interface DelugeTableProps {
-  columns: ColumnDef<TorrentTableRowEntity>[];
-  data: TorrentTableRowEntity[];
-  labels: Label[];
+  columns: ColumnDef<NormalizedTorrentForTable>[];
+  data: NormalizedTorrentForTable[];
 }
 
-const stateOptions: TorrentState[] = Object.values(TorrentState);
-
-export function DelugeTable({ columns, data, labels }: DelugeTableProps) {
+export function DelugeTable({ columns, data }: DelugeTableProps) {
   const queryClient = useQueryClient();
 
-  const labelOptions = labels.map((label) => label.name);
-  const pathOptions = Array.from(new Set(data.map((t) => t.savePath)));
+  // Given data is a array of NormalizedTorrentForTable, which contain state, help me to create newStateOptions by extracting them
+  const stateOptionsSet: Set<TorrentState> = new Set();
+  const labelOptionsSet: Set<string> = new Set();
+  for (const torrent of data) {
+    stateOptionsSet.add(torrent.state);
+    if (torrent.label !== undefined) {
+      labelOptionsSet.add(torrent.label);
+    }
+  }
+
+  // // mutate data, so if label is ', then set it to noLabel
+  // const newData = data.map((torrent) => {
+  //   if (torrent.label === '') {
+  //     return { ...torrent, label: 'noLabel' };
+  //   }
+  //   return torrent;
+  // });
+
+  const stateOptions = Array.from(stateOptionsSet.values());
+  const labelOptions = Array.from(labelOptionsSet.values());
 
   // 1) Set up state for sorting
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -60,8 +76,8 @@ export function DelugeTable({ columns, data, labels }: DelugeTableProps) {
 
   // 2) configure the list instance
   const table = useReactTable({
-    data,
-    columns,
+    data: data,
+    columns: columns,
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(), // ← enable sorting
@@ -109,7 +125,7 @@ export function DelugeTable({ columns, data, labels }: DelugeTableProps) {
               <SelectItem value={'all'}>All States</SelectItem>
               {stateOptions.map((opt) => (
                 <SelectItem key={opt} value={opt}>
-                  {opt}
+                  {pascalCase(opt)}
                 </SelectItem>
               ))}
             </SelectContent>

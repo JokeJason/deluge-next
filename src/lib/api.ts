@@ -4,9 +4,9 @@ import 'client-only';
 
 import axios from 'axios';
 
-import { useCountStore } from '@/lib/store';
+import { useDelugeListStore } from '@/lib/store';
 
-const delugeNextBaseUrl = useCountStore.getState().delugeNextBaseUrl;
+const delugeNextBaseUrl = useDelugeListStore.getState().delugeNextBaseUrl;
 
 export const api = axios.create({
   baseURL: `${delugeNextBaseUrl}/api/deluge`,

@@ -30,6 +30,7 @@
     "@types/byte-size": "^8.1.2",
     "axios": "^1.9.0",
     "byte-size": "^9.0.1",
+    "change-case": "^5.4.4",
     "class-variance-authority": "^0.7.1",
     "client-only": "^0.0.1",
     "clsx": "^2.1.1",

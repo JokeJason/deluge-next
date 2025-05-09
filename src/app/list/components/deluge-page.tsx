@@ -4,8 +4,11 @@
 import { DelugeColumns } from '@/app/list/components/deluge-columns';
 import { DelugeTable } from '@/app/list/components/deluge-table';
 import { useDelugeAllData } from '@/hooks/queries/useDelugeAllData';
-import { useDelugeTorrents } from '@/hooks/queries/useDelugeTorrents';
-import { useCountStore } from '@/lib/store';
+import { useDelugeAllTorrents } from '@/hooks/queries/useDelugeAllTorrents';
+import { useDelugeBatchTorrents } from '@/hooks/queries/useDelugeBatchTorrents';
+import { useDelugeLabels } from '@/hooks/queries/useDelugeLabels';
+import { useDelugeStates } from '@/hooks/queries/useDelugeStates';
+import { useDelugeListStore } from '@/lib/store';
 import { NormalizedTorrent, TorrentState } from '@ctrl/shared-torrent';
 import { useEffect, useState } from 'react';
 
@@ -14,30 +17,36 @@ interface DelugePageProps {
 }
 
 export default function DelugePage({ baseUrl }: DelugePageProps) {
-  const { setDelugeNextBaseUrl } = useCountStore((state) => state);
+  const { setDelugeNextBaseUrl } = useDelugeListStore((state) => state);
   const [activeIds, setActiveIds] = useState<string[]>([]);
 
   const { data: allData, isLoading, isError, error } = useDelugeAllData();
+  const { data: allStates, isLoading: allStatesLoading } = useDelugeStates();
+  const { data: allLabels, isLoading: allLabelsLoading } = useDelugeLabels();
+  const { data: allTorrents, isLoading: allTorrentsLoading } =
+    useDelugeAllTorrents();
 
   useEffect(() => {
     if (!baseUrl) return;
 
-    // set the base URL in the store
+    // set the base URL in the store at the start
     setDelugeNextBaseUrl(baseUrl);
-  }, [setDelugeNextBaseUrl, baseUrl]);
+  }, []);
 
   useEffect(() => {
     if (!allData) return;
 
     const active = allData.torrents.filter(
-      (torrent) => torrent.state === TorrentState.downloading,
+      (torrent) =>
+        torrent.state === TorrentState.downloading ||
+        torrent.state === TorrentState.seeding,
     );
 
     const activeIds = active.map((torrent) => torrent.id);
     setActiveIds(activeIds);
   }, [allData]);
 
-  const activeQueries = useDelugeTorrents(activeIds);
+  const activeQueries = useDelugeBatchTorrents(activeIds);
 
   // extract successful poll results
   const updates = activeQueries
@@ -66,12 +75,8 @@ export default function DelugePage({ baseUrl }: DelugePageProps) {
           Error: {error instanceof Error ? error.message : 'Unknown error'}
         </p>
       )}
-      {allData && (
-        <DelugeTable
-          columns={DelugeColumns}
-          data={merged}
-          labels={allData.labels}
-        />
+      {allData && allLabels && allStates && (
+        <DelugeTable columns={DelugeColumns} data={merged} />
       )}
     </div>
   );

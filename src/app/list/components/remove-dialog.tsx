@@ -9,12 +9,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { TorrentTableRowEntity } from '@/types';
+import { NormalizedTorrentForTable } from '@/types';
 
 export interface RemoveDialogProps {
   isLabelDialogOpen: boolean;
   setLabelDialogOpen: (open: boolean) => void;
-  torrent: TorrentTableRowEntity;
+  torrent: NormalizedTorrentForTable;
 }
 
 export function RemoveDialog({
