@@ -1,7 +1,7 @@
 import { getDelugeClient } from '@/lib/deluge-client';
 import { normalizeTorrentTableData } from '@/lib/normalize-torrent-table-data';
 import { Torrent } from '@ctrl/deluge';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import 'server-only';
 
 type DelugeTorrentStatusRpcResponse = {
@@ -18,7 +18,7 @@ type DelugeSessionRpcResponse = {
   };
 };
 
-export async function GET(request: NextRequest): Promise<NextResponse> {
+export async function GET(): Promise<NextResponse> {
   const deluge = await getDelugeClient();
   if (!deluge) {
     return NextResponse.json(

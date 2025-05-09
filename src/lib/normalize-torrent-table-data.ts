@@ -17,6 +17,7 @@ export function normalizeTorrentTableData(
     id,
     name: torrent.name,
     state,
+    totalSelected: torrent.total_size,
     progress: torrent.progress / 100,
     label: torrent.label,
     savePath: torrent.save_path,

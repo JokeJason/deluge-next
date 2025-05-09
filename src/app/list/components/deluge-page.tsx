@@ -5,8 +5,6 @@ import { DelugeColumns } from '@/app/list/components/deluge-columns';
 import { DelugeTable } from '@/app/list/components/deluge-table';
 import { useDelugeAllTorrents } from '@/hooks/queries/useDelugeAllTorrents';
 import { useDelugeBatchTorrents } from '@/hooks/queries/useDelugeBatchTorrents';
-import { useDelugeLabels } from '@/hooks/queries/useDelugeLabels';
-import { useDelugeStates } from '@/hooks/queries/useDelugeStates';
 import { useDelugeListStore } from '@/lib/store';
 import { NormalizedTorrent, TorrentState } from '@ctrl/shared-torrent';
 import { useEffect, useState } from 'react';
@@ -19,8 +17,6 @@ export default function DelugePage({ baseUrl }: DelugePageProps) {
   const { setDelugeNextBaseUrl } = useDelugeListStore((state) => state);
   const [activeIds, setActiveIds] = useState<string[]>([]);
 
-  const { data: allStates, isLoading: allStatesLoading } = useDelugeStates();
-  const { data: allLabels, isLoading: allLabelsLoading } = useDelugeLabels();
   const {
     data: allTorrents,
     isLoading: allTorrentsLoading,
@@ -72,9 +68,7 @@ export default function DelugePage({ baseUrl }: DelugePageProps) {
       {allTorrentsError && (
         <p className='text-red-500'>Error: {allTorrentsError.message}</p>
       )}
-      {allTorrents && allLabels && allStates && (
-        <DelugeTable columns={DelugeColumns} data={merged} />
-      )}
+      {allTorrents && <DelugeTable columns={DelugeColumns} data={merged} />}
     </div>
   );
 }
