@@ -24,6 +24,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { useDelugeTorrentsSpeed } from '@/hooks/queries/useDelugeTorrentsSpeed';
 import { NormalizedTorrentForTable } from '@/types';
 import { TorrentState } from '@ctrl/shared-torrent';
 import { useQueryClient } from '@tanstack/react-query';
@@ -39,48 +40,93 @@ import {
 } from '@tanstack/react-table';
 import { pascalCase } from 'change-case';
 import { ArrowUpDown, RefreshCw } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 interface DelugeTableProps {
   columns: ColumnDef<NormalizedTorrentForTable>[];
-  data: NormalizedTorrentForTable[];
+  data: Record<string, NormalizedTorrentForTable>;
+  activeIds: string[];
 }
 
-export function DelugeTable({ columns, data }: DelugeTableProps) {
+export function DelugeTable({ columns, data, activeIds }: DelugeTableProps) {
   const queryClient = useQueryClient();
+  const { data: activeTorrentsSpeed } = useDelugeTorrentsSpeed(activeIds);
 
-  // Given data is a array of NormalizedTorrentForTable, which contain state, help me to create newStateOptions by extracting them
-  const stateOptionsSet: Set<TorrentState> = new Set();
-  const labelOptionsSet: Set<string> = new Set();
-  for (const torrent of data) {
-    stateOptionsSet.add(torrent.state);
-    if (torrent.label !== undefined) {
-      labelOptionsSet.add(torrent.label);
-    }
-  }
-
-  // // mutate data, so if label is ', then set it to noLabel
-  // const newData = data.map((torrent) => {
-  //   if (torrent.label === '') {
-  //     return { ...torrent, label: 'noLabel' };
-  //   }
-  //   return torrent;
-  // });
-
-  const stateOptions = Array.from(stateOptionsSet.values());
-  const labelOptions = Array.from(labelOptionsSet.values());
+  const [torrentForTable, setTorrentForTable] =
+    useState<Record<string, NormalizedTorrentForTable>>(data);
+  const [stateOptions, setStateOptions] = useState<TorrentState[]>([]);
+  const [labelOptions, setLabelOptions] = useState<string[]>([]);
 
   // 1) Set up state for sorting
   const [sorting, setSorting] = useState<SortingState>([]);
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 20 });
 
+  // Memoize the merged torrents data
+  const mergedTorrents = useMemo(() => {
+    const updatedTorrents = { ...data };
+
+    if (activeTorrentsSpeed) {
+      Object.entries(activeTorrentsSpeed).forEach(([torrentId, speedData]) => {
+        if (updatedTorrents[torrentId]) {
+          updatedTorrents[torrentId] = {
+            ...updatedTorrents[torrentId],
+            progress: speedData.progress,
+            downloadSpeed: speedData.downloadSpeed,
+            uploadSpeed: speedData.uploadSpeed,
+            eta: speedData.eta,
+          };
+        }
+      });
+    }
+
+    return updatedTorrents;
+  }, [data, activeTorrentsSpeed]);
+
+  // Memoize filter options calculations
+  const { stateOptionsArray, labelOptionsArray } = useMemo(() => {
+    const torrentData = Object.values(mergedTorrents);
+    const stateOptionsSet: Set<TorrentState> = new Set();
+    const labelOptionsSet: Set<string> = new Set();
+
+    for (const torrent of torrentData) {
+      stateOptionsSet.add(torrent.state);
+      if (torrent.label !== undefined) {
+        labelOptionsSet.add(torrent.label);
+      }
+    }
+
+    return {
+      stateOptionsArray: Array.from(stateOptionsSet.values()),
+      labelOptionsArray: Array.from(labelOptionsSet.values()),
+    };
+  }, [mergedTorrents]);
+
+  // Update states only when memoized values change
+  useEffect(() => {
+    setTorrentForTable(mergedTorrents);
+  }, [mergedTorrents]);
+
+  useEffect(() => {
+    setStateOptions(stateOptionsArray);
+    setLabelOptions(labelOptionsArray);
+  }, [stateOptionsArray, labelOptionsArray]);
+
+  // Memoize table data to prevent unnecessary re-renders
+  const tableData = useMemo(
+    () => Object.values(torrentForTable),
+    [torrentForTable],
+  );
+
+  // Memoize columns to prevent unnecessary re-renders
+  const memoizedColumns = useMemo(() => columns, [columns]);
+
   // 2) configure the list instance
   const table = useReactTable({
-    data: data,
-    columns: columns,
+    data: tableData,
+    columns: memoizedColumns,
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(), // ← enable sorting
+    getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onPaginationChange: setPagination,
     getFilteredRowModel: getFilteredRowModel(),

@@ -1,5 +1,9 @@
 import { api } from '@/lib/api';
-import { ApiResponse, NormalizedTorrentForTable } from '@/types';
+import {
+  ApiResponse,
+  NormalizedTorrentForTable,
+  TorrentSpeedForTable,
+} from '@/types';
 import { DefaultResponse } from '@ctrl/deluge';
 import { AllClientData, NormalizedTorrent } from '@ctrl/shared-torrent';
 
@@ -30,6 +34,19 @@ export async function fetchAllTorrents(): Promise<
     );
   if (!data.success) throw new Error(data.error);
   return data.data;
+}
+
+export async function fetchTorrentsSpeed(
+  ids: string[],
+): Promise<Record<string, TorrentSpeedForTable>> {
+  // send POST request to /torrents/speed with ids in the body
+  const { data } = await api.post<
+    ApiResponse<Record<string, TorrentSpeedForTable>>
+  >('/torrents/speed', {
+    ids,
+  });
+  if (!data.success) throw new Error(data.error);
+  return data.data as Record<string, TorrentSpeedForTable>;
 }
 
 export async function fetchTorrent(id: string): Promise<NormalizedTorrent> {

@@ -4,9 +4,8 @@
 import { DelugeColumns } from '@/app/list/components/deluge-columns';
 import { DelugeTable } from '@/app/list/components/deluge-table';
 import { useDelugeAllTorrents } from '@/hooks/queries/useDelugeAllTorrents';
-import { useDelugeBatchTorrents } from '@/hooks/queries/useDelugeBatchTorrents';
 import { useDelugeListStore } from '@/lib/store';
-import { NormalizedTorrent, TorrentState } from '@ctrl/shared-torrent';
+import { TorrentState } from '@ctrl/shared-torrent';
 import { useEffect, useState } from 'react';
 
 interface DelugePageProps {
@@ -43,34 +42,19 @@ export default function DelugePage({ baseUrl }: DelugePageProps) {
     setActiveIds(activeIds);
   }, [allTorrents]);
 
-  const activeQueries = useDelugeBatchTorrents(activeIds);
-
-  // extract successful poll results
-  const updates = activeQueries
-    .map((q) => q.data)
-    .filter((d): d is NormalizedTorrent => Boolean(d));
-
-  // build a lookup map id → updated torrent
-  const updateMap = new Map<string, NormalizedTorrent>(
-    updates.map((u) => [u.id, u]),
-  );
-
-  // merge: if we have an update, use it; otherwise fall back to the original
-  const merged = allTorrents
-    ? Object.values(allTorrents).map((t) =>
-        updateMap.has(t.id) ? updateMap.get(t.id)! : t,
-      )
-    : [];
-
-  // TODO: get speed and progress from the torrent status endpoint to merge, so avoid getting entire torrent data
-
   return (
     <div className='container mx-auto py-8'>
       {allTorrentsLoading && <p>Loading...</p>}
       {allTorrentsError && (
         <p className='text-red-500'>Error: {allTorrentsError.message}</p>
       )}
-      {allTorrents && <DelugeTable columns={DelugeColumns} data={merged} />}
+      {allTorrents && (
+        <DelugeTable
+          columns={DelugeColumns}
+          data={allTorrents}
+          activeIds={activeIds}
+        />
+      )}
     </div>
   );
 }
