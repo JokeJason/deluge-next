@@ -128,17 +128,11 @@ export function DelugeTable({ columns, data, activeIds }: DelugeTableProps) {
           </Select>
           <Select
             value={
-              table.getColumn('label')?.getFilterValue() === undefined
-                ? 'all'
-                : table.getColumn('label')?.getFilterValue() === ''
-                  ? '__NO_LABEL__'
-                  : (table.getColumn('label')?.getFilterValue() as string)
+              (table.getColumn('label')?.getFilterValue() as string) ?? 'all'
             }
             onValueChange={(val) => {
               if (val === 'all') {
                 table.getColumn('label')?.setFilterValue(undefined);
-              } else if (val === '__NO_LABEL__') {
-                table.getColumn('label')?.setFilterValue('');
               } else {
                 table.getColumn('label')?.setFilterValue(val);
               }
@@ -150,11 +144,8 @@ export function DelugeTable({ columns, data, activeIds }: DelugeTableProps) {
             <SelectContent>
               <SelectItem value='all'>All Labels</SelectItem>
               {labelOptions.map((opt) => (
-                <SelectItem
-                  key={opt === '' ? 'empty' : opt}
-                  value={opt === '' ? '__NO_LABEL__' : opt}
-                >
-                  {opt || 'No Label'}
+                <SelectItem key={opt} value={opt}>
+                  {opt === 'noLabel' ? 'No Label' : pascalCase(opt)}
                 </SelectItem>
               ))}
             </SelectContent>

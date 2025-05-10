@@ -65,7 +65,12 @@ export async function GET(): Promise<
       // push dataRecord into torrents
       for (const key in dataRecords) {
         if (dataRecords[key]) {
-          torrents[key] = dataRecords[key];
+          // mutate the dataRecords to add label if it is empty
+          const singleTorrent = dataRecords[key];
+          if (singleTorrent.label === '') {
+            singleTorrent.label = 'noLabel';
+          }
+          torrents[key] = singleTorrent;
         }
       }
     }
