@@ -1,6 +1,7 @@
 import { getDelugeClient } from '@/lib/deluge-client';
 import { ApiResponse, DelugeRpcResponse, TorrentSpeedForTable } from '@/types';
 import { NextRequest, NextResponse } from 'next/server';
+import 'server-only';
 
 type DelugeTorrentSpeedRpcResponse = DelugeRpcResponse<
   Record<string, TorrentSpeedForTable>

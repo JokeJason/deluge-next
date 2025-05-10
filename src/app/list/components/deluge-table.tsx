@@ -140,8 +140,8 @@ export function DelugeTable({
               <div className={'pt-1.5'}>
                 <RefreshCw
                   className={'hover:animate-spin animate-once'}
-                  onClick={() => {
-                    queryClient.invalidateQueries({
+                  onClick={async () => {
+                    await queryClient.invalidateQueries({
                       queryKey: ['allTorrents'],
                     });
                   }}

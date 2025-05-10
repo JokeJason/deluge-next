@@ -1,5 +1,3 @@
-export const dynamic = 'force-dynamic';
-
 import { getDelugeClient } from '@/lib/deluge-client';
 import { normalizeTorrentTableData } from '@/lib/normalize-torrent-table-data';
 import {
@@ -11,11 +9,13 @@ import { Torrent } from '@ctrl/deluge';
 import { TorrentState } from '@ctrl/shared-torrent';
 import { pascalCase } from 'change-case';
 import { NextResponse } from 'next/server';
+import 'server-only';
 
 type DelugeTorrentStatusRpcResponse = DelugeRpcResponse<
   Record<string, Torrent>
 >;
 
+// TODO: delete this one torrents/active/speed endpoint is implemented
 export async function GET(): Promise<
   NextResponse<ApiResponse<Record<string, NormalizedTorrentForTable>>>
 > {

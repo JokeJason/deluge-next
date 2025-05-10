@@ -7,7 +7,7 @@ import { useDelugeActiveTorrents } from '@/hooks/queries/useDelugeActiveTorrents
 import { useDelugeAllTorrents } from '@/hooks/queries/useDelugeAllTorrents';
 import { useDelugeStates } from '@/hooks/queries/useDelugeStates';
 import { useDelugeListStore } from '@/lib/store';
-import { NormalizedTorrentForTable } from '@/types';
+import { NormalizedTorrentForTable, TorrentSpeedForTable } from '@/types';
 import { useEffect, useMemo } from 'react';
 
 interface DelugePageProps {
@@ -16,13 +16,19 @@ interface DelugePageProps {
 
 function computeMergedTorrentsArray(
   allTorrents: Record<string, NormalizedTorrentForTable>,
-  activeTorrents?: Record<string, NormalizedTorrentForTable>,
+  activeTorrentsSpeed?: Record<string, TorrentSpeedForTable>,
 ) {
   // calculate merged torrents by replacing the active torrents in all torrents with the active torrents
   const mergedTorrents = { ...allTorrents };
-  if (activeTorrents) {
-    Object.keys(activeTorrents).forEach((key) => {
-      mergedTorrents[key] = { ...mergedTorrents[key], ...activeTorrents[key] };
+  if (activeTorrentsSpeed) {
+    Object.keys(activeTorrentsSpeed).forEach((key) => {
+      const torrent = allTorrents[key];
+      if (torrent) {
+        mergedTorrents[key] = {
+          ...torrent,
+          ...activeTorrentsSpeed[key],
+        };
+      }
     });
   }
   return Object.values(mergedTorrents);
@@ -49,7 +55,7 @@ export default function DelugePage({ baseUrl }: DelugePageProps) {
     error: allTorrentsError,
   } = useDelugeAllTorrents();
   const { data: allStates } = useDelugeStates();
-  const { data: activeTorrents } = useDelugeActiveTorrents();
+  const { data: activeTorrentsSpeed } = useDelugeActiveTorrents();
 
   useEffect(() => {
     if (!baseUrl) return;
@@ -65,8 +71,8 @@ export default function DelugePage({ baseUrl }: DelugePageProps) {
   const memorizedTorrents = useMemo(() => {
     if (!allTorrents) return [];
 
-    return computeMergedTorrentsArray(allTorrents, activeTorrents);
-  }, [allTorrents, activeTorrents]);
+    return computeMergedTorrentsArray(allTorrents, activeTorrentsSpeed);
+  }, [allTorrents, activeTorrentsSpeed]);
 
   return (
     <div className='container mx-auto py-8'>
