@@ -4,7 +4,6 @@
 import { DelugeColumns } from '@/app/list/components/deluge-columns';
 import { DelugeTable } from '@/app/list/components/deluge-table';
 import { useDelugeAllTorrents } from '@/hooks/queries/useDelugeAllTorrents';
-import { useDelugeLabels } from '@/hooks/queries/useDelugeLabels';
 import { useDelugeStates } from '@/hooks/queries/useDelugeStates';
 import { useDelugeListStore } from '@/lib/store';
 import { TorrentState } from '@ctrl/shared-torrent';
@@ -12,6 +11,18 @@ import { useEffect, useState } from 'react';
 
 interface DelugePageProps {
   baseUrl: string;
+}
+
+function getLabelOptions(allTorrents: Record<string, any>): string[] {
+  const labels = new Set<string>();
+
+  Object.values(allTorrents).forEach((torrent) => {
+    if (torrent.label) {
+      labels.add(torrent.label);
+    }
+  });
+
+  return Array.from(labels);
 }
 
 export default function DelugePage({ baseUrl }: DelugePageProps) {
@@ -24,7 +35,6 @@ export default function DelugePage({ baseUrl }: DelugePageProps) {
     error: allTorrentsError,
   } = useDelugeAllTorrents();
   const { data: allStates, isLoading: allStatesLoading } = useDelugeStates();
-  const { data: allLabels, isLoading: allLabelsLoading } = useDelugeLabels();
 
   useEffect(() => {
     if (!baseUrl) return;
@@ -52,12 +62,12 @@ export default function DelugePage({ baseUrl }: DelugePageProps) {
       {allTorrentsError && (
         <p className='text-red-500'>Error: {allTorrentsError.message}</p>
       )}
-      {allTorrents && allStates && allLabels && (
+      {allTorrents && allStates && (
         <DelugeTable
           columns={DelugeColumns}
           data={allTorrents}
           stateOptions={allStates}
-          labelOptions={allLabels}
+          labelOptions={getLabelOptions(allTorrents)}
           activeIds={activeIds}
         />
       )}
