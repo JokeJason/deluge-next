@@ -38,14 +38,13 @@ import {
 } from '@tanstack/react-table';
 import { camelCase, pascalCase } from 'change-case';
 import { ArrowUpDown, RefreshCw } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 interface DelugeTableProps {
   columns: ColumnDef<NormalizedTorrentForTable>[];
-  data: Record<string, NormalizedTorrentForTable>;
+  data: NormalizedTorrentForTable[];
   stateOptions: string[];
   labelOptions: string[];
-  activeIds: string[];
 }
 
 export function DelugeTable({
@@ -53,25 +52,16 @@ export function DelugeTable({
   data,
   stateOptions,
   labelOptions,
-  activeIds,
 }: DelugeTableProps) {
   const queryClient = useQueryClient();
-
-  const [torrentForTable, setTorrentForTable] = useState<
-    NormalizedTorrentForTable[]
-  >(Object.values(data));
 
   // 1) Set up state for sorting
   const [sorting, setSorting] = useState<SortingState>([]);
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 20 });
 
-  useEffect(() => {
-    setTorrentForTable(Object.values(data));
-  }, [data]);
-
   // 2) configure the list instance
   const table = useReactTable({
-    data: torrentForTable,
+    data: data,
     columns: columns,
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),

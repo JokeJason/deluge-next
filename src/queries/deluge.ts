@@ -36,6 +36,17 @@ export async function fetchAllTorrents(): Promise<
   return data.data;
 }
 
+export async function fetchActiveTorrents(): Promise<
+  Record<string, NormalizedTorrentForTable> | undefined
+> {
+  const { data } =
+    await api.get<ApiResponse<Record<string, NormalizedTorrentForTable>>>(
+      '/torrents/active',
+    );
+  if (!data.success) throw new Error(data.error);
+  return data.data;
+}
+
 export async function fetchTorrentsSpeed(
   ids: string[],
 ): Promise<Record<string, TorrentSpeedForTable>> {

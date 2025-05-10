@@ -3,14 +3,29 @@
 
 import { DelugeColumns } from '@/app/list/components/deluge-columns';
 import { DelugeTable } from '@/app/list/components/deluge-table';
+import { useDelugeActiveTorrents } from '@/hooks/queries/useDelugeActiveTorrents';
 import { useDelugeAllTorrents } from '@/hooks/queries/useDelugeAllTorrents';
 import { useDelugeStates } from '@/hooks/queries/useDelugeStates';
 import { useDelugeListStore } from '@/lib/store';
-import { TorrentState } from '@ctrl/shared-torrent';
-import { useEffect, useState } from 'react';
+import { NormalizedTorrentForTable } from '@/types';
+import { useEffect, useMemo } from 'react';
 
 interface DelugePageProps {
   baseUrl: string;
+}
+
+function computeMergedTorrentsArray(
+  allTorrents: Record<string, NormalizedTorrentForTable>,
+  activeTorrents?: Record<string, NormalizedTorrentForTable>,
+) {
+  // calculate merged torrents by replacing the active torrents in all torrents with the active torrents
+  const mergedTorrents = { ...allTorrents };
+  if (activeTorrents) {
+    Object.keys(activeTorrents).forEach((key) => {
+      mergedTorrents[key] = { ...mergedTorrents[key], ...activeTorrents[key] };
+    });
+  }
+  return Object.values(mergedTorrents);
 }
 
 function getLabelOptions(allTorrents: Record<string, any>): string[] {
@@ -27,14 +42,14 @@ function getLabelOptions(allTorrents: Record<string, any>): string[] {
 
 export default function DelugePage({ baseUrl }: DelugePageProps) {
   const { setDelugeNextBaseUrl } = useDelugeListStore((state) => state);
-  const [activeIds, setActiveIds] = useState<string[]>([]);
 
   const {
     data: allTorrents,
     isLoading: allTorrentsLoading,
     error: allTorrentsError,
   } = useDelugeAllTorrents();
-  const { data: allStates, isLoading: allStatesLoading } = useDelugeStates();
+  const { data: allStates } = useDelugeStates();
+  const { data: activeTorrents } = useDelugeActiveTorrents();
 
   useEffect(() => {
     if (!baseUrl) return;
@@ -45,16 +60,13 @@ export default function DelugePage({ baseUrl }: DelugePageProps) {
 
   useEffect(() => {
     if (!allTorrents) return;
-
-    const active = Object.values(allTorrents).filter(
-      (torrent) =>
-        torrent.state === TorrentState.downloading ||
-        torrent.state === TorrentState.seeding,
-    );
-
-    const activeIds = active.map((torrent) => torrent.id);
-    setActiveIds(activeIds);
   }, [allTorrents]);
+
+  const memorizedTorrents = useMemo(() => {
+    if (!allTorrents) return [];
+
+    return computeMergedTorrentsArray(allTorrents, activeTorrents);
+  }, [allTorrents, activeTorrents]);
 
   return (
     <div className='container mx-auto py-8'>
@@ -62,13 +74,12 @@ export default function DelugePage({ baseUrl }: DelugePageProps) {
       {allTorrentsError && (
         <p className='text-red-500'>Error: {allTorrentsError.message}</p>
       )}
-      {allTorrents && allStates && (
+      {!allTorrentsError && allTorrents && allStates && (
         <DelugeTable
           columns={DelugeColumns}
-          data={allTorrents}
+          data={memorizedTorrents}
           stateOptions={allStates}
           labelOptions={getLabelOptions(allTorrents)}
-          activeIds={activeIds}
         />
       )}
     </div>
