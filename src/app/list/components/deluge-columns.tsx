@@ -127,7 +127,8 @@ export const DelugeColumns: ColumnDef<NormalizedTorrentForTable>[] = [
     id: 'label',
     accessorKey: 'label',
     header: 'Label',
-    cell: (info) => info.getValue<string>() ?? '—',
+    cell: (info) =>
+      info.getValue<string>() === 'noLabel' ? '—' : info.getValue<string>(),
   },
   {
     header: 'Actions',
