@@ -25,7 +25,6 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { NormalizedTorrentForTable } from '@/types';
-import { TorrentState } from '@ctrl/shared-torrent';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   ColumnDef,
@@ -37,33 +36,30 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { pascalCase } from 'change-case';
+import { camelCase, pascalCase } from 'change-case';
 import { ArrowUpDown, RefreshCw } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface DelugeTableProps {
   columns: ColumnDef<NormalizedTorrentForTable>[];
   data: Record<string, NormalizedTorrentForTable>;
+  stateOptions: string[];
+  labelOptions: string[];
   activeIds: string[];
 }
 
-export function DelugeTable({ columns, data, activeIds }: DelugeTableProps) {
+export function DelugeTable({
+  columns,
+  data,
+  stateOptions,
+  labelOptions,
+  activeIds,
+}: DelugeTableProps) {
   const queryClient = useQueryClient();
 
   const [torrentForTable, setTorrentForTable] = useState<
     NormalizedTorrentForTable[]
   >(Object.values(data));
-
-  const stateOptionsSet: Set<TorrentState> = new Set<TorrentState>();
-  const labelOptionsSet: Set<string> = new Set<string>();
-  for (const torrent of Object.values(data)) {
-    stateOptionsSet.add(torrent.state);
-    if (torrent.label !== undefined) {
-      labelOptionsSet.add(torrent.label);
-    }
-  }
-  const stateOptions = Array.from(stateOptionsSet).sort();
-  const labelOptions = Array.from(labelOptionsSet).sort();
 
   // 1) Set up state for sorting
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -118,10 +114,9 @@ export function DelugeTable({ columns, data, activeIds }: DelugeTableProps) {
               <SelectValue placeholder='Filter by state' />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={'all'}>All States</SelectItem>
               {stateOptions.map((opt) => (
-                <SelectItem key={opt} value={opt}>
-                  {pascalCase(opt)}
+                <SelectItem key={camelCase(opt)} value={camelCase(opt)}>
+                  {opt}
                 </SelectItem>
               ))}
             </SelectContent>

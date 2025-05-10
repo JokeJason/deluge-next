@@ -1,8 +1,9 @@
 import { validateSession } from '@/app/actions/auth';
 import { getDelugeClient } from '@/lib/deluge-client';
+import { ApiResponse } from '@/types';
 import { NextResponse } from 'next/server';
 
-export async function GET(): Promise<NextResponse> {
+export async function GET(): Promise<NextResponse<ApiResponse<string[]>>> {
   const { authenticated } = await validateSession();
   if (!authenticated) {
     return NextResponse.json(
@@ -26,7 +27,10 @@ export async function GET(): Promise<NextResponse> {
     // get all strings from the states array
     const statesArray = states.map((s) => s[0]);
 
-    return NextResponse.json({ success: true, states: statesArray });
+    return NextResponse.json({
+      success: true,
+      data: statesArray,
+    } as ApiResponse<string[]>);
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : String(error);
     return NextResponse.json(

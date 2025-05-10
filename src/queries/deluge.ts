@@ -8,15 +8,15 @@ import { DefaultResponse } from '@ctrl/deluge';
 import { AllClientData, NormalizedTorrent } from '@ctrl/shared-torrent';
 
 export async function fetchStates(): Promise<string[]> {
-  const { data } = await api.get('/states');
+  const { data } = await api.get<ApiResponse<string[]>>('/states');
   if (!data.success) throw new Error(data.error);
-  return data.states as string[];
+  return data.data as string[];
 }
 
 export async function fetchLabels(): Promise<string[]> {
-  const { data } = await api.get('/labels');
+  const { data } = await api.get<ApiResponse<string[]>>('/labels');
   if (!data.success) throw new Error(data.error);
-  return data.labels as string[];
+  return data.data as string[];
 }
 
 export async function fetchAllData(): Promise<AllClientData> {
