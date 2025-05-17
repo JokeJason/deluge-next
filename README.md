@@ -1,36 +1,89 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# deluge-next
+
+A modern web frontend for the [Deluge](https://deluge-torrent.org/) BitTorrent client, built with [Next.js](https://nextjs.org/), [TanStack Query](https://tanstack.com/query), [TanStack Table](https://tanstack.com/table), and [shadcn/ui](https://ui.shadcn.com/).
+
+**deluge-next** addresses performance issues in the default Deluge Web UI when managing large numbers of torrents (500+).
+
+## Features
+
+- Fast and responsive UI for large torrent lists
+- Modern React-based architecture
+- Powerful filtering and sorting capabilities
+- Real-time torrent status updates
+- Customizable table views
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js (version sepcified in `.nvmrc`)
+- pnpm (installed via `npm install -g pnpm`)
+- A running Deluge instance with Web UI enabled
+
+### Installation
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/jokejason/deluge-next.git
+   cd deluge-next
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   pnpm install
+   ```
+
+3. **Configure environment variables:**
+
+   Copy `.env.local.example` to `.env.local` and update the values:
+   ```bash
+   cp .env.local.example .env.local
+   ```
+
+   Required environment variables:
+    - `DELUGE_URL`: URL of your Deluge Web UI
+    - `DELUGE_PASSWORD`: Your Deluge Web UI password
+   - `DELUGE_NEXT_BASE_URL`: Base URL where deluge-next is hosted
+    - `SESSION_SECRET`: Secret key for session management, generated using `openssl rand -base64 32`
+
+4. **Run the development server:**
+   ```bash
+   pnpm dev
+   ```
+
+5. **Open [http://localhost:3000](http://localhost:3000) in your browser.**
+
+## Docker Deployment
+
+### Using Docker Compose with build
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+docker-compose up --env-file .env.local
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Using Pre-built Image
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+docker-compose -f docker-compose-image.yml up
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Environment variables can be configured in your host environment or via a `.env` file.
 
-## Learn More
+## Contributing
 
-To learn more about Next.js, take a look at the following resources:
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## License
 
-## Deploy on Vercel
+[MIT](LICENSE)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+> Built with Next.js, TanStack Query, TanStack Table, and shadcn/ui.
+```
