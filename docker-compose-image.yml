@@ -1,0 +1,13 @@
+services:
+  htpc-deluge-next:
+    container_name: htpc-deluge-next
+    image: ghcr.io/jokejason/deluge-next:latest
+    env_file: .env.local
+    ports:
+      - "3000:3000"
+    environment:
+      - DELUGE_URL=${DELUGE_URL}
+      - DELUGE_PASSWORD=${DELUGE_PASSWORD}
+      - DELUGE_TIMEOUT=${DELUGE_TIMEOUT}
+      - DELUGE_NEXT_BASE_URL=${DELUGE_NEXT_BASE_URL}
+      - SESSION_SECRET=${SESSION_SECRET}
