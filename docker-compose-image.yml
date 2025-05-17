@@ -1,8 +1,7 @@
 services:
-  htpc-deluge-next:
+  deluge-next:
     container_name: htpc-deluge-next
     image: ghcr.io/jokejason/deluge-next:latest
-    env_file: .env.local
     ports:
       - "3000:3000"
     environment:
