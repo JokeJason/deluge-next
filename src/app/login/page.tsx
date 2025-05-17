@@ -1,7 +1,26 @@
+import 'server-only';
+
 import { AnimatedBackground } from '@/app/login/components/animated-background';
 import { LoginForm } from '@/app/login/components/login-form';
+import { prisma } from '@/lib/db';
+import { decrypt } from '@/lib/session';
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 
-export default function LoginPage() {
+export default async function LoginPage() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get('deluge-next-session')?.value;
+
+  const session = await decrypt(token);
+
+  const sessionExists = await prisma.session.findFirst({
+    where: { id: session?.sessionId },
+  });
+
+  if (sessionExists) {
+    redirect('/list');
+  }
+
   return (
     <div className='flex h-screen w-full'>
       {/* Left panel with vibrant animation */}

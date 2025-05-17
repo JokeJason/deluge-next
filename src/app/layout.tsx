@@ -18,6 +18,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: 'Deluge Next',
   description: 'Next.js app for Deluge torrent client',
+  icons: {
+    icon: '/deluge-icon-32.png',
+  },
 };
 
 export default function RootLayout({

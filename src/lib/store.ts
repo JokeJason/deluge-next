@@ -1,22 +1,16 @@
 import { create } from 'zustand';
 
-type States = {
-  count: number;
+type ListStates = {
   delugeNextBaseUrl: string;
 };
 
-type Actions = {
-  increase: () => void;
-  decrease: () => void;
+type ListActions = {
   setDelugeNextBaseUrl: (url: string) => void;
 };
 
-export const useCountStore = create<States & Actions>((set) => ({
-  count: 0,
+export const useDelugeListStore = create<ListStates & ListActions>((set) => ({
   delugeNextBaseUrl: '',
 
-  increase: () => set((state) => ({ count: state.count + 1 })),
-  decrease: () => set((state) => ({ count: state.count - 1 })),
   setDelugeNextBaseUrl: (url: string) =>
     set(() => ({ delugeNextBaseUrl: url })),
 }));

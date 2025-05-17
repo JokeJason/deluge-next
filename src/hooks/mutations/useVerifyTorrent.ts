@@ -10,7 +10,7 @@ export function useVerifyTorrent() {
     mutationFn: (data: { torrentId: string }) => verifyTorrent(data.torrentId),
     onSuccess: () => {
       // Invalidate and refetch
-      queryClient.invalidateQueries({ queryKey: ['allData'] });
+      queryClient.invalidateQueries({ queryKey: ['allTorrents'] });
     },
   });
 }

@@ -1,82 +1,88 @@
 'use client';
 
-import type React from 'react';
-
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { login } from '@/app/actions/auth';
 import { Button } from '@/components/ui/button';
+import { Form, FormField, FormItem, FormLabel } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { AlertCircle, Loader2 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { LoginState } from '@/lib/definitions';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Eye, EyeOff, Loader2 } from 'lucide-react';
+import { useActionState, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+
+const loginFormSchema = z.object({
+  password: z.string(),
+});
 
 export function LoginForm() {
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
+  const [showPassword, setShowPassword] = useState(true);
+  const [state, formAction, pending] = useActionState<LoginState, FormData>(
+    login,
+    undefined,
+  );
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    setIsLoading(true);
-
-    try {
-      // This is where you would authenticate with your Deluge server
-      // For example:
-      // const response = await fetch('/api/auth/deluge', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ password }),
-      // })
-
-      // Simulate authentication for demo purposes
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      // If password is "demo", consider it successful
-      if (password === 'demo') {
-        router.push('/dashboard');
-      } else {
-        setError('Invalid password. Please try again.');
-      }
-    } catch {
-      setError('Failed to connect to Deluge. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const form = useForm<z.infer<typeof loginFormSchema>>({
+    resolver: zodResolver(loginFormSchema),
+    defaultValues: {
+      password: '',
+    },
+  });
 
   return (
-    <form onSubmit={handleSubmit} className='space-y-4'>
-      {error && (
-        <Alert variant='destructive'>
-          <AlertCircle className='h-4 w-4' />
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
-
-      <div className='space-y-2'>
-        <Label htmlFor='password'>Password</Label>
-        <Input
-          id='password'
-          type='password'
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder='Enter your Deluge password'
-          required
+    <Form {...form}>
+      <form action={formAction} className='space-y-4'>
+        <FormField
+          name={'password'}
+          control={form.control}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Password</FormLabel>
+              <div className='relative'>
+                <Input
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder={'password'}
+                  {...field}
+                />
+                <Button
+                  type='button'
+                  variant='ghost'
+                  size='sm'
+                  className='absolute top-0 right-0 h-full px-3 py-1'
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? (
+                    <EyeOff className='h-4 w-4' />
+                  ) : (
+                    <Eye className='h-4 w-4' />
+                  )}
+                  <span className='sr-only'>
+                    {showPassword ? 'Hide password' : 'Show password'}
+                  </span>
+                </Button>
+              </div>
+            </FormItem>
+          )}
         />
-      </div>
-
-      <Button type='submit' className='w-full' disabled={isLoading}>
-        {isLoading ? (
-          <>
-            <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-            Connecting...
-          </>
-        ) : (
-          'Login'
+        {state?.errors?.password && (
+          <div className='text-destructive text-sm mt-1'>
+            {state.errors.password.map((item, index) => (
+              <div key={index}>{item}</div>
+            ))}
+          </div>
         )}
-      </Button>
-    </form>
+
+        <Button type='submit' className='w-full' disabled={pending}>
+          {pending ? (
+            <>
+              <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+              Loading...
+            </>
+          ) : (
+            'Login'
+          )}
+        </Button>
+      </form>
+    </Form>
   );
 }
