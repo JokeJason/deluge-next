@@ -34,7 +34,9 @@ function computeMergedTorrentsArray(
   return Object.values(mergedTorrents);
 }
 
-function getLabelOptions(allTorrents: Record<string, any>): string[] {
+function getLabelOptions(
+  allTorrents: Record<string, NormalizedTorrentForTable>,
+): string[] {
   const labels = new Set<string>();
 
   Object.values(allTorrents).forEach((torrent) => {

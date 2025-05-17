@@ -45,7 +45,6 @@ async function validateToken(
 export default async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
   const isProtectedRoute = ROUTES.protected.includes(path);
-  const isPublicRoute = ROUTES.public.includes(path);
 
   // Get token from cookies
   const token = req.cookies.get('deluge-next-session')?.value;

@@ -2,16 +2,8 @@
 'use server';
 
 import { getDelugeClient } from '@/lib/deluge-client';
-import { AddTorrentResponse, Deluge, TorrentContentFile } from '@ctrl/deluge';
+import { AddTorrentResponse, TorrentContentFile } from '@ctrl/deluge';
 import 'server-only';
-
-const deluge = new Deluge({
-  baseUrl: process.env.DELUGE_URL,
-  password: process.env.DELUGE_PASSWORD,
-  timeout: process.env.DELUGE_TIMEOUT
-    ? Number(process.env.DELUGE_TIMEOUT)
-    : undefined,
-});
 
 export async function addTorrent(
   tmpPath: string,
