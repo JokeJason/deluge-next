@@ -36,7 +36,11 @@ export async function GET(): Promise<
     const seedingTorrents = data._data.result;
     for (const key in seedingTorrents) {
       if (seedingTorrents[key]) {
-        torrents[key] = seedingTorrents[key];
+        torrents[key] = {
+          ...seedingTorrents[key],
+          // progress needs to be divided by 100 to get the percentage
+          progress: seedingTorrents[key].progress / 100,
+        };
       }
     }
 
@@ -44,10 +48,14 @@ export async function GET(): Promise<
       { state: pascalCase(TorrentState.downloading) },
       torrentKeys,
     ])) as DelugeTorrentSpeedRpcResponse;
+    console.log('data', data._data.result);
     const downloadTorrents = data._data.result;
     for (const key in downloadTorrents) {
       if (downloadTorrents[key]) {
-        torrents[key] = downloadTorrents[key];
+        torrents[key] = {
+          ...seedingTorrents[key],
+          progress: seedingTorrents[key].progress / 100,
+        };
       }
     }
 
@@ -58,7 +66,10 @@ export async function GET(): Promise<
     const checkingTorrents = data._data.result;
     for (const key in checkingTorrents) {
       if (checkingTorrents[key]) {
-        torrents[key] = checkingTorrents[key];
+        torrents[key] = {
+          ...seedingTorrents[key],
+          progress: seedingTorrents[key].progress / 100,
+        };
       }
     }
 
