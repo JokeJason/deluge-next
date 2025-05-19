@@ -3,16 +3,11 @@
 
 import { DelugeColumns } from '@/app/list/components/deluge-columns';
 import { DelugeTable } from '@/app/list/components/deluge-table';
-import { useDelugeListStore } from '@/lib/store';
 import type { ApiResponse } from '@/types';
 import { NormalizedTorrentForTable, TorrentSpeedForTable } from '@/types';
 import { useAuth } from '@clerk/nextjs';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
-
-interface DelugePageProps {
-  baseUrl: string;
-}
 
 async function fetchAllTorrents(
   token?: string | null,
@@ -100,9 +95,8 @@ function getLabelOptions(
   return Array.from(labels);
 }
 
-export default function DelugePage({ baseUrl }: DelugePageProps) {
+export default function DelugePage() {
   const { getToken } = useAuth();
-  const { setDelugeNextBaseUrl } = useDelugeListStore((state) => state);
 
   const {
     data: allTorrents,
@@ -133,13 +127,6 @@ export default function DelugePage({ baseUrl }: DelugePageProps) {
     refetchInterval: 1000 * 60,
     staleTime: 5 * 60 * 1000,
   });
-
-  useEffect(() => {
-    if (!baseUrl) return;
-
-    // set the base URL in the store at the start
-    setDelugeNextBaseUrl(baseUrl);
-  }, []);
 
   useEffect(() => {
     if (!allTorrents) return;

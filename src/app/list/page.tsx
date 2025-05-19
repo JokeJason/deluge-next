@@ -5,7 +5,7 @@ import { getDelugeClient } from '@/lib/deluge-client';
 import { auth } from '@clerk/nextjs/server';
 
 export default async function Page() {
-  const { userId, redirectToSignIn, getToken } = await auth();
+  const { userId, redirectToSignIn } = await auth();
 
   if (!userId) return redirectToSignIn();
 
@@ -24,5 +24,5 @@ export default async function Page() {
     throw new Error('DELUGE_NEXT_BASE_URL is not defined');
   }
 
-  return <DelugePage baseUrl={delugeNextBaseUrl} />;
+  return <DelugePage />;
 }
