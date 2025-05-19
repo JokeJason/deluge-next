@@ -1,4 +1,3 @@
-import { validateSession } from '@/app/actions/auth';
 import { getDelugeClient } from '@/lib/deluge-client';
 import { NextRequest, NextResponse } from 'next/server';
 import 'server-only';
@@ -15,14 +14,6 @@ const getTorrentSpeedResponseSchema = z.object({
 });
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
-  const { authenticated } = await validateSession();
-  if (!authenticated) {
-    return NextResponse.json(
-      { success: false, error: 'Unauthorized' },
-      { status: 401 },
-    );
-  }
-
   const deluge = await getDelugeClient();
   if (!deluge) {
     return NextResponse.json(

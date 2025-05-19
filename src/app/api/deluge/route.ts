@@ -1,4 +1,3 @@
-import { validateSession } from '@/app/actions/auth';
 import { getDelugeClient } from '@/lib/deluge-client';
 import { NextRequest, NextResponse } from 'next/server';
 import 'server-only';
@@ -11,14 +10,6 @@ const addTorrentSchema = z.object({
 });
 
 export async function GET() {
-  const { authenticated } = await validateSession();
-  if (!authenticated) {
-    return NextResponse.json(
-      { success: false, error: 'Unauthorized' },
-      { status: 401 },
-    );
-  }
-
   const deluge = await getDelugeClient();
   if (!deluge) {
     return NextResponse.json(
@@ -46,14 +37,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { success: false, error: 'Deluge client not available' },
       { status: 500 },
-    );
-  }
-
-  const { authenticated } = await validateSession();
-  if (!authenticated) {
-    return NextResponse.json(
-      { success: false, error: 'Unauthorized' },
-      { status: 401 },
     );
   }
 

@@ -5,32 +5,9 @@ import 'server-only';
 import { prisma } from '@/lib/db';
 import { LoginSchema, LoginState } from '@/lib/definitions';
 import { updateDelugePassword } from '@/lib/deluge-client';
-import { createSession, decrypt, deleteSession } from '@/lib/session';
+import { deleteSession } from '@/lib/session';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-
-export async function validateSession() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get('deluge-next-session')?.value;
-
-  if (!token) {
-    return { authenticated: false };
-  }
-
-  const session = await decrypt(token);
-  if (!session?.sessionId) {
-    return { authenticated: false };
-  }
-
-  const sessionExists = await prisma.session.findUnique({
-    where: { id: session.sessionId },
-  });
-
-  return {
-    authenticated: !!sessionExists,
-    sessionId: sessionExists ? session.sessionId : null,
-  };
-}
 
 async function savePassword(password: string) {
   await prisma.password.create({
@@ -48,7 +25,7 @@ async function getPassword(): Promise<string | null> {
   return password.value;
 }
 
-export async function login(
+export async function enterDelugePassword(
   _prevState: LoginState,
   formData: FormData,
 ): Promise<LoginState> {
@@ -98,7 +75,6 @@ export async function login(
     };
   }
 
-  await createSession();
   redirect('/');
 }
 

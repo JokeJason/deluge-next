@@ -1,6 +1,6 @@
 'use client';
 
-import { login } from '@/app/actions/auth';
+import { enterDelugePassword } from '@/app/actions/auth';
 import { Button } from '@/components/ui/button';
 import { Form, FormField, FormItem, FormLabel } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -15,10 +15,10 @@ const loginFormSchema = z.object({
   password: z.string(),
 });
 
-export function LoginForm() {
+export function PasswordForm() {
   const [showPassword, setShowPassword] = useState(true);
   const [state, formAction, pending] = useActionState<LoginState, FormData>(
-    login,
+    enterDelugePassword,
     undefined,
   );
 
@@ -79,7 +79,7 @@ export function LoginForm() {
               Loading...
             </>
           ) : (
-            'Login'
+            'Verify'
           )}
         </Button>
       </form>

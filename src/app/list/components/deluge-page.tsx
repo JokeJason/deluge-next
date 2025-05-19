@@ -3,11 +3,10 @@
 
 import { DelugeColumns } from '@/app/list/components/deluge-columns';
 import { DelugeTable } from '@/app/list/components/deluge-table';
-import { useDelugeActiveTorrents } from '@/hooks/queries/useDelugeActiveTorrents';
-import { useDelugeAllTorrents } from '@/hooks/queries/useDelugeAllTorrents';
-import { useDelugeStates } from '@/hooks/queries/useDelugeStates';
 import { useDelugeListStore } from '@/lib/store';
 import { NormalizedTorrentForTable, TorrentSpeedForTable } from '@/types';
+import { useAuth } from '@clerk/nextjs';
+import { useQuery } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
 
 interface DelugePageProps {
@@ -49,15 +48,46 @@ function getLabelOptions(
 }
 
 export default function DelugePage({ baseUrl }: DelugePageProps) {
+  const { getToken } = useAuth();
   const { setDelugeNextBaseUrl } = useDelugeListStore((state) => state);
 
   const {
     data: allTorrents,
     isLoading: allTorrentsLoading,
     error: allTorrentsError,
-  } = useDelugeAllTorrents();
-  const { data: allStates } = useDelugeStates();
-  const { data: activeTorrentsSpeed } = useDelugeActiveTorrents();
+  } = useQuery({
+    queryKey: ['allTorrents'],
+    queryFn: async () => {
+      // const token = await getToken();
+      const response = await fetch('/api/deluge/torrents', {
+        // headers: {
+        //   Authorization: `Bearer ${token}`,
+        // },
+      });
+      const result = await response.json();
+      return result.data;
+    },
+    refetchInterval: 1000 * 60,
+    staleTime: 5 * 60 * 1000,
+  });
+  const { data: allStates } = useQuery({
+    queryKey: ['allStates'],
+    queryFn: async () => {
+      const response = await fetch('/api/deluge/states');
+      const result = await response.json();
+      return result.data;
+    },
+  });
+  const { data: activeTorrentsSpeed } = useQuery({
+    queryKey: ['activeTorrentsSpeed'],
+    queryFn: async () => {
+      const response = await fetch('/api/deluge/torrents/active/speed');
+      const result = await response.json();
+      return result.data;
+    },
+    refetchInterval: 1000 * 60,
+    staleTime: 5 * 60 * 1000,
+  });
 
   useEffect(() => {
     if (!baseUrl) return;
