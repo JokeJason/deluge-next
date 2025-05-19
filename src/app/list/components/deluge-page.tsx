@@ -109,7 +109,6 @@ export default function DelugePage() {
       return fetchAllTorrents(token);
     },
     refetchInterval: 1000 * 60,
-    staleTime: 5 * 60 * 1000,
   });
   const { data: allStates } = useQuery({
     queryKey: ['allStates'],
@@ -117,6 +116,7 @@ export default function DelugePage() {
       const token = await getToken();
       return fetchAllStates(token);
     },
+    staleTime: 5 * 60 * 1000,
   });
   const { data: activeTorrentsSpeed } = useQuery({
     queryKey: ['activeTorrentsSpeed'],
@@ -124,8 +124,7 @@ export default function DelugePage() {
       const token = await getToken();
       return fetchActiveTorrentsSpeed(token);
     },
-    refetchInterval: 1000 * 60,
-    staleTime: 5 * 60 * 1000,
+    refetchInterval: 1000 * 10,
   });
 
   useEffect(() => {

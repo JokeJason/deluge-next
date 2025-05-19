@@ -51,6 +51,17 @@ export async function GET(): Promise<
       }
     }
 
+    data = (await deluge.request('core.get_torrents_status', [
+      { state: pascalCase(TorrentState.checking) },
+      torrentKeys,
+    ])) as DelugeTorrentSpeedRpcResponse;
+    const checkingTorrents = data._data.result;
+    for (const key in checkingTorrents) {
+      if (checkingTorrents[key]) {
+        torrents[key] = checkingTorrents[key];
+      }
+    }
+
     return NextResponse.json({ success: true, data: torrents });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : String(error);
