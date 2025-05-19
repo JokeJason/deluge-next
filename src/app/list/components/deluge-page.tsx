@@ -3,63 +3,15 @@
 
 import { DelugeColumns } from '@/app/list/components/deluge-columns';
 import { DelugeTable } from '@/app/list/components/deluge-table';
-import type { ApiResponse } from '@/types';
+import {
+  fetchActiveTorrentsSpeed,
+  fetchAllStates,
+  fetchAllTorrents,
+} from '@/lib/api';
 import { NormalizedTorrentForTable, TorrentSpeedForTable } from '@/types';
 import { useAuth } from '@clerk/nextjs';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
-
-async function fetchAllTorrents(
-  token?: string | null,
-): Promise<Record<string, NormalizedTorrentForTable> | undefined> {
-  const response = await fetch('/api/deluge/torrents', {
-    method: 'GET',
-    headers: {
-      ...(token && { Authorization: `Bearer ${token}` }),
-    },
-  });
-
-  const result = (await response.json()) as ApiResponse<
-    Record<string, NormalizedTorrentForTable>
-  >;
-
-  if (!result.success) throw new Error(result.error);
-  return result.data;
-}
-
-async function fetchAllStates(
-  token?: string | null,
-): Promise<string[] | undefined> {
-  const response = await fetch('/api/deluge/states', {
-    method: 'GET',
-    headers: {
-      ...(token && { Authorization: `Bearer ${token}` }),
-    },
-  });
-
-  const result = (await response.json()) as ApiResponse<string[]>;
-
-  if (!result.success) throw new Error(result.error);
-  return result.data;
-}
-
-async function fetchActiveTorrentsSpeed(
-  token?: string | null,
-): Promise<Record<string, TorrentSpeedForTable> | undefined> {
-  const response = await fetch('/api/deluge/torrents/active/speed', {
-    method: 'GET',
-    headers: {
-      ...(token && { Authorization: `Bearer ${token}` }),
-    },
-  });
-
-  const result = (await response.json()) as ApiResponse<
-    Record<string, TorrentSpeedForTable>
-  >;
-
-  if (!result.success) throw new Error(result.error);
-  return result.data;
-}
 
 function computeMergedTorrentsArray(
   allTorrents: Record<string, NormalizedTorrentForTable>,
@@ -108,7 +60,7 @@ export default function DelugePage() {
       const token = await getToken();
       return fetchAllTorrents(token);
     },
-    refetchInterval: 1000 * 60,
+    refetchInterval: 1000 * 60 * 5,
   });
   const { data: allStates } = useQuery({
     queryKey: ['allStates'],
@@ -138,7 +90,7 @@ export default function DelugePage() {
   }, [allTorrents, activeTorrentsSpeed]);
 
   return (
-    <div className='container mx-auto py-8'>
+    <div className='container mx-auto pb-8'>
       {allTorrentsLoading && <p>Loading...</p>}
       {allTorrentsError && (
         <p className='text-red-500'>Error: {allTorrentsError.message}</p>

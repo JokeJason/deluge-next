@@ -24,7 +24,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { type ApiResponse, NormalizedTorrentForTable } from '@/types';
+import { fetchAllLabels } from '@/lib/api';
+import type { NormalizedTorrentForTable } from '@/types';
 import { useAuth } from '@clerk/nextjs';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -34,23 +35,6 @@ import { z } from 'zod';
 const FormSchema = z.object({
   label: z.string().min(1, 'Label is required'),
 });
-
-async function fetchAllLabels(
-  token?: string | null,
-): Promise<string[] | undefined> {
-  const response = await fetch('/api/deluge/labels', {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error('Failed to fetch labels');
-  }
-  const data = (await response.json()) as ApiResponse<string[]>;
-  return data.data;
-}
 
 export interface LabelDialogProps {
   isLabelDialogOpen: boolean;
