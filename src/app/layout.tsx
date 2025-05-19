@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { SiteHeader } from '@/components/site-header';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import QueryProvider from '@/providers/query-provider';
