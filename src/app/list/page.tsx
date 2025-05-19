@@ -18,11 +18,5 @@ export default async function Page() {
     return <div>Check session failed</div>;
   }
 
-  const delugeNextBaseUrl = process.env.DELUGE_NEXT_BASE_URL;
-
-  if (delugeNextBaseUrl === undefined) {
-    throw new Error('DELUGE_NEXT_BASE_URL is not defined');
-  }
-
   return <DelugePage />;
 }
