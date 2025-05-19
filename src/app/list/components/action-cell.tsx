@@ -51,7 +51,7 @@ export function ActionCell({
     try {
       const { response } = await verifyTorrent(torrentId);
       if (response.id) {
-        await queryClient.invalidateQueries(['allTorrents']);
+        await queryClient.invalidateQueries({ queryKey: ['allTorrents'] });
       }
     } catch (error) {
       console.error('Failed to verify torrent:', error);
