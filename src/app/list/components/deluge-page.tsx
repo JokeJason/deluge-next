@@ -58,11 +58,11 @@ export default function DelugePage({ baseUrl }: DelugePageProps) {
   } = useQuery({
     queryKey: ['allTorrents'],
     queryFn: async () => {
-      // const token = await getToken();
+      const token = await getToken();
       const response = await fetch('/api/deluge/torrents', {
-        // headers: {
-        //   Authorization: `Bearer ${token}`,
-        // },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
       const result = await response.json();
       return result.data;
@@ -73,7 +73,12 @@ export default function DelugePage({ baseUrl }: DelugePageProps) {
   const { data: allStates } = useQuery({
     queryKey: ['allStates'],
     queryFn: async () => {
-      const response = await fetch('/api/deluge/states');
+      const token = await getToken();
+      const response = await fetch('/api/deluge/states', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       const result = await response.json();
       return result.data;
     },
@@ -81,7 +86,12 @@ export default function DelugePage({ baseUrl }: DelugePageProps) {
   const { data: activeTorrentsSpeed } = useQuery({
     queryKey: ['activeTorrentsSpeed'],
     queryFn: async () => {
-      const response = await fetch('/api/deluge/torrents/active/speed');
+      const token = await getToken();
+      const response = await fetch('/api/deluge/torrents/active/speed', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       const result = await response.json();
       return result.data;
     },
