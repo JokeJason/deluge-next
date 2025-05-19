@@ -8,6 +8,7 @@ A modern web frontend for the [Deluge](https://deluge-torrent.org/) BitTorrent c
 
 - Fast and responsive UI for large torrent lists
 - Modern React-based architecture
+- User authentication via Clerk
 - Powerful filtering and sorting capabilities
 - Real-time torrent status updates
 - Customizable table views
@@ -16,9 +17,10 @@ A modern web frontend for the [Deluge](https://deluge-torrent.org/) BitTorrent c
 
 ### Prerequisites
 
-- Node.js (version sepcified in `.nvmrc`)
+- Node.js (version specified in `.nvmrc`)
 - pnpm (installed via `npm install -g pnpm`)
 - A running Deluge instance with Web UI enabled
+- Clerk account for authentication
 
 ### Installation
 
@@ -42,9 +44,11 @@ A modern web frontend for the [Deluge](https://deluge-torrent.org/) BitTorrent c
 
    Required environment variables:
     - `DELUGE_URL`: URL of your Deluge Web UI
-    - `DELUGE_PASSWORD`: Your Deluge Web UI password
-   - `DELUGE_NEXT_BASE_URL`: Base URL where deluge-next is hosted
-    - `SESSION_SECRET`: Secret key for session management, generated using `openssl rand -base64 32`
+    - `DELUGE_PASSWORD`: Your Deluge Web UI password
+    - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`: Your Clerk publishable key 
+    - `CLERK_SECRET_KEY`: Your Clerk secret key
+
+   You can get Clerk API keys by creating an account at [clerk](https://clerk.com/) and setting up an application. This update adds authentication as a feature and includes the Clerk environment variables in the configuration section.
 
 4. **Run the development server:**
    ```bash

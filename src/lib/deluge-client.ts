@@ -1,5 +1,4 @@
 // src/lib/deluge-client.ts
-import { prisma } from '@/lib/db';
 import { Deluge } from '@ctrl/deluge';
 
 class DelugeClientService {
@@ -9,8 +8,14 @@ class DelugeClientService {
 
   // Get the current password from the database
   private static async getStoredPassword(): Promise<string | null> {
-    const password = await prisma.password.findFirst();
-    return password?.value || null;
+    // const password = await prisma.password.findFirst();
+    // return password?.value || null;
+
+    const password = process.env.DELUGE_PASSWORD;
+    if (!password) {
+      throw new Error('No password found in environment variables');
+    }
+    return password;
   }
 
   // Initialize the service
