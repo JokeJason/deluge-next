@@ -55,6 +55,8 @@ export function DelugeTable({
 }: DelugeTableProps) {
   const queryClient = useQueryClient();
 
+  const pathOptions = Array.from(new Set(data.map((t) => t.savePath)));
+
   // 1) Set up state for sorting
   const [sorting, setSorting] = useState<SortingState>([]);
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 20 });
@@ -135,6 +137,29 @@ export function DelugeTable({
               ))}
             </SelectContent>
           </Select>
+          <Select
+            value={
+              (table.getColumn('downloadPath')?.getFilterValue() as string) ??
+              'all'
+            }
+            onValueChange={(val) => {
+              table
+                .getColumn('downloadPath')
+                ?.setFilterValue(val === 'all' ? undefined : val);
+            }}
+          >
+            <SelectTrigger className='w-48'>
+              <SelectValue placeholder={'Filter by save path'} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={'all'}>All Paths</SelectItem>
+              {pathOptions.map((path) => (
+                <SelectItem key={path} value={path}>
+                  {path}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>{' '}
           <Tooltip>
             <TooltipTrigger asChild>
               <div className={'pt-1.5'}>

@@ -1,17 +1,8 @@
-import { validateSession } from '@/app/actions/auth';
 import { getDelugeClient } from '@/lib/deluge-client';
 import { ApiResponse } from '@/types';
 import { NextResponse } from 'next/server';
 
 export async function GET(): Promise<NextResponse<ApiResponse<string[]>>> {
-  const { authenticated } = await validateSession();
-  if (!authenticated) {
-    return NextResponse.json(
-      { success: false, error: 'Unauthorized' },
-      { status: 401 },
-    );
-  }
-
   const deluge = await getDelugeClient();
   if (!deluge) {
     return NextResponse.json(

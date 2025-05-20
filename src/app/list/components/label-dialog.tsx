@@ -24,10 +24,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useDelugeLabels } from '@/hooks/queries/useDelugeLabels';
-import { NormalizedTorrentForTable } from '@/types';
+import { fetchAllLabels } from '@/lib/api';
+import type { NormalizedTorrentForTable } from '@/types';
+import { useAuth } from '@clerk/nextjs';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -46,9 +47,17 @@ export function LabelDialog({
   setLabelDialogOpen,
   torrent,
 }: LabelDialogProps) {
+  const { getToken } = useAuth();
   const queryClient = useQueryClient();
 
-  const { data: labels } = useDelugeLabels();
+  const { data: labels } = useQuery({
+    queryKey: ['allLabels'],
+    queryFn: async () => {
+      const token = await getToken();
+      return fetchAllLabels(token);
+    },
+    staleTime: 5 * 60 * 1000,
+  });
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
