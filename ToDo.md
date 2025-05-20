@@ -5,7 +5,7 @@ This document tracks bugs to fix and features to implement for the Deluge Next p
 ## Bugs
 
 ### High Priority
-- [ ] *Fix progress and speed calculation for active torrent speed polling*
+- [x] ~~*Fix progress and speed calculation for active torrent speed polling*~~ (Fixed on 2025-05-20)
 
 ### Medium Priority
 - [ ] *Modify add-torrent-modal so when new torrent file is added, the modal should close and notification should be shown*

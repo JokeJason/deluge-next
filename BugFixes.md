@@ -22,6 +22,18 @@ Explanation of how the bug was fixed
 
 <!-- Add new bug fixes at the top -->
 
+## [2025-05-20] Fixed Progress and Speed Calculation for Active Torrent Speed Polling
+
+**Description:**
+The progress values for torrents were incorrectly calculated, causing inaccurate display of download progress and speed information in the UI.
+
+**Fix:**
+Modified the code to properly calculate and normalize the progress values by dividing by 100 to convert from percentage to decimal format. Also ensured that speed calculations for seeding, downloading, and checking torrents were all handled consistently.
+
+**Fixed by:** @JokeJason
+
+---
+
 ## [2025-05-20] Initial Bug Fix Log Created
 
 **Description:**
