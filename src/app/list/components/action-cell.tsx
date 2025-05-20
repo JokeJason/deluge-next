@@ -10,6 +10,7 @@ import {
   pauseTorrent,
   resumeTorrent,
 } from '@/app/list/actions/change-torrent-state';
+import { verifyTorrent } from '@/app/list/actions/verify-torrent';
 import { LabelDialog } from '@/app/list/components/label-dialog';
 import { RemoveDialog } from '@/app/list/components/remove-dialog';
 import { Button } from '@/components/ui/button';
@@ -24,8 +25,8 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useVerifyTorrent } from '@/hooks/mutations/useVerifyTorrent';
 import { NormalizedTorrentForTable } from '@/types';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   ArrowDownIcon,
   ArrowDownToLineIcon,
@@ -43,9 +44,19 @@ export function ActionCell({
 }: {
   torrent: NormalizedTorrentForTable;
 }) {
+  const queryClient = useQueryClient();
   const [isLabelDialogOpen, setLabelDialogOpen] = useState(false);
   const [isRemoveDialogOpen, setRemoveDialogOpen] = useState(false);
-  const verifyTorrent = useVerifyTorrent();
+  async function onVerifyTorrent(torrentId: string) {
+    try {
+      const { response } = await verifyTorrent(torrentId);
+      if (response.id) {
+        await queryClient.invalidateQueries({ queryKey: ['allTorrents'] });
+      }
+    } catch (error) {
+      console.error('Failed to verify torrent:', error);
+    }
+  }
 
   return (
     <>
@@ -88,9 +99,7 @@ export function ActionCell({
             <DeleteIcon /> Remove Torrent
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem
-            onClick={() => verifyTorrent.mutate({ torrentId: torrent.id })}
-          >
+          <DropdownMenuItem onClick={() => onVerifyTorrent(torrent.id)}>
             Force Recheck
           </DropdownMenuItem>
           <DropdownMenuSeparator />

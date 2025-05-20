@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 
+// TODO: remove this when not needed
 export async function GET(): Promise<NextResponse> {
   // return environment variables
   const env = {
